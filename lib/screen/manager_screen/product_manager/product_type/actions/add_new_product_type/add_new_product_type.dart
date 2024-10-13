@@ -116,16 +116,6 @@ class _add_new_product_typeState extends State<add_new_product_type> {
             ),
 
             SizedBox(height: 10,),
-
-            Container(
-              height: 200 / (859/734),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.fitHeight,
-                  image: AssetImage('assets/image/hdphanloai.png'),
-                )
-              ),
-            ),
           ],
         ),
       ),

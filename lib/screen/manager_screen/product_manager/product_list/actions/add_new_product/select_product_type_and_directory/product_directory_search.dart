@@ -73,7 +73,7 @@ class _product_directory_searchState extends State<product_directory_search> {
                   ),
                   child: ListTile(
                     title: Text(filteredList[index].name),
-                    onTap: () {
+                    onTap: () async {
                       control.text = filteredList[index].name;
                       widget.product.productDirectory = filteredList[index].id;
                       widget.event();

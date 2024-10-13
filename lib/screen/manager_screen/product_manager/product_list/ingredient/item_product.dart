@@ -1,9 +1,12 @@
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/select_product_type_and_directory/product_type_search.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../../../data/otherData/Tool.dart';
 import '../../../../../data/otherdata/Time.dart';
 import '../../../../../data/product/Product.dart';
 import '../../../../../general_ingredient/text_line_in_item.dart';
+import '../actions/add_new_product/select_product_type_and_directory/product_directory_search.dart';
+import '../actions/change_name_and_description/change_name_and_description.dart';
 import '../controller.dart';
 
 class item_product extends StatefulWidget {
@@ -17,6 +20,7 @@ class item_product extends StatefulWidget {
 
 class _item_productState extends State<item_product> {
   String productType = 'Lỗi tên phân loại';
+  String productDirect = 'Lỗi tên phân loại';
   Product product = Product(id: generateID(15), name: '', productType: '', showStatus: 0, createTime: getCurrentTime(), description: '', productDirectory: '', dimensionList: [], imageList: [],);
 
   void get_product() {
@@ -47,6 +51,19 @@ class _item_productState extends State<item_product> {
     }
   }
 
+  void get_direct_name() {
+    if (product.productType != '') {
+      final reference = FirebaseDatabase.instance.ref();
+      reference.child("productDirectory").child(product.productDirectory).child('name').onValue.listen((event) {
+        final dynamic data = event.snapshot.value;
+        productDirect = data.toString();
+        setState(() {
+
+        });
+      });
+    }
+  }
+
 
   @override
   void initState() {
@@ -54,6 +71,7 @@ class _item_productState extends State<item_product> {
     super.initState();
     get_product();
     get_type_name();
+    get_direct_name();
   }
 
   @override
@@ -208,50 +226,23 @@ class _item_productState extends State<item_product> {
                         ),
                       ),
                       onPressed: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return AlertDialog(
-                        //       title: Text('Chọn phân loại sản phẩm'),
-                        //       content: Container(
-                        //         width: 400,
-                        //         height: 300,
-                        //         child: change_product_type(product: product,),
-                        //       ),
-                        //     );
-                        //   },
-                        // );
-                      },
-                    ),
-                  ),
-
-                  Container(height: 8,),
-
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      child: Text(
-                        'Sửa nhà cung cấp',
-                        style: TextStyle(
-                          fontFamily: 'muli',
-                          color: Colors.blueAccent,
-                          fontSize: 14,
-                        ),
-                      ),
-                      onPressed: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return AlertDialog(
-                        //       title: Text('Chọn nhà cung cấp'),
-                        //       content: Container(
-                        //         width: 400,
-                        //         height: 300,
-                        //         child: change_product_brand(product: product,),
-                        //       ),
-                        //     );
-                        //   },
-                        // );
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Sửa phân loại sp'),
+                              content: Container(
+                                width: 400,
+                                height: 300,
+                                child: product_type_search(product: product, event: () async {
+                                  await product_manager_controller.change_productType(product);
+                                  setState(() {get_type_name();});
+                                  Navigator.of(context).pop();},
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
                     ),
                   ),
@@ -275,25 +266,17 @@ class _item_productState extends State<item_product> {
               padding: EdgeInsets.only(left: 10, right: 10),
               child: ListView(
                 children: [
-                  Container(
-                    // child: ListView.builder(
-                    //   shrinkWrap: true,
-                    //   padding: EdgeInsets.zero,
-                    //   itemCount: product.directoryList.length,
-                    //   itemBuilder: (context, index) {
-                    //     return Padding(
-                    //       padding: EdgeInsets.only(top: 5),
-                    //       child: item_directory_name(id: product.directoryList[index], index: index, width: ((width - 50)/5-1) - 20, product: product,),
-                    //     );
-                    //   },
-                    // ),
-                  ),
+                  Container(height: 4,),
+
+                  text_line_in_item(color: Colors.black,title: 'Danh mục: ', content: productDirect),
+
+                  Container(height: 8,),
 
                   Container(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
                       child: Text(
-                        'Thêm danh mục',
+                        'Sửa danh mục',
                         style: TextStyle(
                           fontFamily: 'muli',
                           color: Colors.blueAccent,
@@ -301,22 +284,28 @@ class _item_productState extends State<item_product> {
                         ),
                       ),
                       onPressed: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return AlertDialog(
-                        //       title: Text('Thêm danh mục sản phẩm'),
-                        //       content: Container(
-                        //         width: 400,
-                        //         height: 300,
-                        //         child: change_directory(product: product,),
-                        //       ),
-                        //     );
-                        //   },
-                        // );
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Sửa danh mục sp'),
+                              content: Container(
+                                width: 400,
+                                height: 300,
+                                child: product_directory_search(product: product, event: () async {
+                                  await product_manager_controller.change_productDirectory(product);
+                                  setState(() {get_direct_name();});
+                                  Navigator.of(context).pop();},
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
                     ),
                   ),
+
+                  Container(height: 10,),
                 ],
               ),
             ),
@@ -359,46 +348,12 @@ class _item_productState extends State<item_product> {
                         ),
                       ),
                       onTap: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return change_name_and_description(product: product);
-                        //   },
-                        // );
-                      },
-                    ),
-                  ),
-
-                  Container(height: 8,),
-
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: GestureDetector(
-                      child: Container(
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                              width: 1,
-                              color: Colors.black
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Cập nhật nội dung phụ',
-                            style: TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return change_sub_description(product: product);
-                        //   },
-                        // );
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return change_name_and_description(product: product);
+                          },
+                        );
                       },
                     ),
                   ),

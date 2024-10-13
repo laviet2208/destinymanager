@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_directory/product_directory_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/product_list_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_type/product_type_main_manager.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _main_manager_screenState extends State<main_manager_screen> {
     }
 
     if (init == 4) {
-
+      return product_directory_main();
     }
 
     if (init == 5) {

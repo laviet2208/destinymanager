@@ -24,14 +24,12 @@ class _add_new_productState extends State<add_new_product> {
   bool showStatus = false;
   QuillEditorController controller = QuillEditorController();
   final nameController = TextEditingController();
-  final costController = TextEditingController();
-  final costSaleController = TextEditingController();
   bool loading = false;
   final List<Uint8List> imageList = [];
   Product product = Product(id: '', name: '', productType: '', showStatus: 0, createTime: getCurrentTime(), description: '', productDirectory: '', dimensionList: [], imageList: []);
 
   bool check_if_fill_all() {
-    if (nameController.text.isNotEmpty && costController.text.isNotEmpty && costSaleController.text.isNotEmpty && imageList.isNotEmpty && product.productType != '' && product.productDirectory != '' && product.dimensionList.isNotEmpty) {
+    if (nameController.text.isNotEmpty && product.imageList.isNotEmpty && product.productType != '' && product.productDirectory != '' && product.dimensionList.isNotEmpty) {
       return true;
     }
     return false;
@@ -125,6 +123,75 @@ class _add_new_productState extends State<add_new_product> {
                 bottom: 0,
                 left: 0,
                 child: Container(
+                  width: width1/4,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(height: 10,),
+
+                            Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: textfield_type_1(title: 'Tên sản phẩm mới', hint: 'Nhập tên sản phẩm', controller: nameController),
+                            ),
+
+                            Container(height: 10,),
+                          ],
+                        ),
+                      ),
+
+                      Container(height: 10,),
+
+                      product_dimension_select(product: product),
+
+                      Container(height: 20,),
+                    ],
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: 75,
+                bottom: 0,
+                left: width1/4 + 10,
+                child: Container(
+                  width: width1/4,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      Container(
+                        child: select_product_type(product: product,),
+                      ),
+
+                      Container(height: 20,),
+
+                      Container(
+                        child: select_product_directory(product: product,),
+                      ),
+
+                      Container(height: 20,),
+
+                      Container(
+                        child: select_product_image(imageList: product.imageList),
+                      ),
+
+                      Container(height: 30,),
+                    ],
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: 75,
+                bottom: 0,
+                left: width1/4 + 10 + width1/4 + 10,
+                child: Container(
                   width: width1/2,
                   child: ListView(
                     padding: EdgeInsets.zero,
@@ -148,23 +215,16 @@ class _add_new_productState extends State<add_new_product> {
 
                             Padding(
                               padding: EdgeInsets.only(left: 10, right: 10),
-                              child: textfield_type_1(title: 'Tên sản phẩm mới', hint: 'Nhập tên sản phẩm', controller: nameController),
-                            ),
-
-                            Container(height: 10,),
-
-                            Padding(
-                              padding: EdgeInsets.only(left: 10, right: 10),
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  'Nội dung',
+                                  'Mô tả chi tiết sản phẩm',
+                                  textAlign: TextAlign.start,
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
                                     fontFamily: 'muli',
+                                    fontSize: 17,
                                     color: Colors.black,
-                                    decoration: TextDecoration.none,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
@@ -240,54 +300,6 @@ class _add_new_productState extends State<add_new_product> {
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              Positioned(
-                top: 75,
-                bottom: 0,
-                left: width1/2 + 10,
-                child: Container(
-                  width: width1/4,
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      Container(
-                        child: select_product_type(product: product,),
-                      ),
-
-                      Container(height: 20,),
-
-                      Container(
-                        child: select_product_directory(product: product,),
-                      ),
-
-                      Container(height: 20,),
-
-                      Container(
-                        child: select_product_image(imageList: product.imageList),
-                      ),
-
-                      Container(height: 30,),
-                    ],
-                  ),
-                ),
-              ),
-
-              Positioned(
-                top: 75,
-                bottom: 0,
-                left: width1/2 + 10 + width1/4 + 10,
-                child: Container(
-                  width: width1/4,
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      product_dimension_select(product: product),
-
-                      Container(height: 20,),
                     ],
                   ),
                 ),

@@ -14,11 +14,11 @@ class select_product_directory extends StatefulWidget {
 class _select_product_directoryState extends State<select_product_directory> {
   String productType = 'Chưa chọn danh mục sản phẩm';
   void get_type_name() {
-    if (widget.product.productType == '') {
+    if (widget.product.productDirectory == '') {
 
     } else {
       final reference = FirebaseDatabase.instance.ref();
-      reference.child("productDirectory").child(widget.product.productType).child('name').onValue.listen((event) {
+      reference.child("productDirectory").child(widget.product.productDirectory).child('name').onValue.listen((event) {
         final dynamic data = event.snapshot.value;
         if (data != null) {
           productType = data.toString();
@@ -30,6 +30,13 @@ class _select_product_directoryState extends State<select_product_directory> {
         });
       });
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    get_type_name();
   }
 
   @override
@@ -81,7 +88,7 @@ class _select_product_directoryState extends State<select_product_directory> {
               text: TextSpan(
                   children: <TextSpan>[
                     TextSpan(
-                      text: 'Phân loại sản phẩm: ',
+                      text: 'Danh mục sản phẩm: ',
                       style: TextStyle(
                         fontFamily: 'muli',
                         fontWeight: FontWeight.bold,
@@ -118,7 +125,7 @@ class _select_product_directoryState extends State<select_product_directory> {
                         content: Container(
                           width: 400,
                           height: 300,
-                          child: product_directory_search(product: widget.product, event: () {setState(() {});  Navigator.of(context).pop();},),
+                          child: product_directory_search(product: widget.product, event: () {setState(() {get_type_name();});  Navigator.of(context).pop();},),
                         ),
                       );
                     },

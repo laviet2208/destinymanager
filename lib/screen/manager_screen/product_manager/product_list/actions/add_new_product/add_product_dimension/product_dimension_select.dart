@@ -37,15 +37,57 @@ class _product_dimension_selectState extends State<product_dimension_select> {
 
           Padding(
             padding: EdgeInsets.only(left: 20, right: 10),
-            child: Text(
-              'Kích cỡ sản phẩm',
-              style: TextStyle(
-                fontFamily: 'muli',
-                fontSize: 17,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: Row(
+              children: [
+                Text(
+                  'Kích cỡ sản phẩm',
+                  style: TextStyle(
+                    fontFamily: 'muli',
+                    fontSize: 17,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                SizedBox(width: 5,),
+
+                GestureDetector(
+                  child: Icon(
+                    Icons.question_mark,
+                    color: Colors.red,
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.white,
+                          insetPadding: EdgeInsets.zero,
+                          contentPadding: EdgeInsets.all(10),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          content: Container(
+                            width: width/2,
+                            height: (width/2)/(1258/765),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: AssetImage('assets/hd/hdsd1.png'),
+                              )
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {Navigator.of(context).pop();},
+                              child: Text('Đóng', style: TextStyle(color: Colors.red),),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            )
           ),
 
           SizedBox(height: 10,),

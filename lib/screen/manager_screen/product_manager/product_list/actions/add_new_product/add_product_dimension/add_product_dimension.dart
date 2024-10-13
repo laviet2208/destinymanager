@@ -40,9 +40,13 @@ class _add_product_dimensionState extends State<add_product_dimension> {
     double? costSale = double.tryParse(costSaleText);
     int? inventory = int.tryParse(inventoryText);
 
-    // Kiểm tra cả hai giá trị đều lớn hơn 0
-    if (cost != null && cost > 0 && costSale != null && costSale > 0 && inventory != null && inventory >= 0) {
-      return true;
+    // Kiểm tra điều kiện
+    if (cost != null && cost > 0 && costSale != null && costSale >= 0 && inventory != null && inventory >= 0) {
+      if (costSale > 0 && costSale <= cost) {
+        return false;
+      } else {
+        return true;
+      }
     } else {
       return false;
     }

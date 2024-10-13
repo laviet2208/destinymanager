@@ -4,15 +4,13 @@ class ProductDirectory {
   String id;
   String name;
   int status; //0: đang ẩn, 1: đang hiện
-  String image;
   Time createTime;
 
-  ProductDirectory({required this.id, required this.status, required this.name, required this.createTime, required this.image});
+  ProductDirectory({required this.id, required this.status, required this.name, required this.createTime,});
 
   Map<dynamic, dynamic> toJson() => {
     'id': id,
     'createTime': createTime.toJson(),
-    'image': image,
     'name': name,
     'status': status,
   };
@@ -23,7 +21,6 @@ class ProductDirectory {
       createTime: Time.fromJson(json['createTime']),
       name: json['name'].toString(),
       status: int.parse(json['status'].toString()),
-      image: json['image'].toString(),
     );
   }
 }
