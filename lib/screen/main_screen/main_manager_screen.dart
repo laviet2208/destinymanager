@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:destinymanager/screen/manager_screen/ads_manager/ads_manager_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_directory/product_directory_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/product_list_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_type/product_type_main_manager.dart';
@@ -72,7 +73,7 @@ class _main_manager_screenState extends State<main_manager_screen> {
     }
 
     if (init == 15) {
-
+      return ads_manager_main();
     }
 
     if (init == 16) {

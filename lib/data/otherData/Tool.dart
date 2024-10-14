@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'Time.dart';
 
 Time getCurrentTime() {

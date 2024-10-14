@@ -45,6 +45,7 @@ dependencies:
   flutter_widget_from_html: ^0.15.1
   image_picker_web: ^3.0.0+1
   cloud_firestore: ^5.0.2
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
