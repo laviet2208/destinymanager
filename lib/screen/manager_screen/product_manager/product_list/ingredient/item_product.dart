@@ -1,8 +1,11 @@
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/select_product_type_and_directory/product_type_search.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/dimension_actions/delete_dimension.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/dimension_actions/update_dimension.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../../../data/otherData/Tool.dart';
 import '../../../../../data/otherdata/Time.dart';
+import '../../../../../data/product/DataChangeHistory.dart';
 import '../../../../../data/product/Product.dart';
 import '../../../../../general_ingredient/text_line_in_item.dart';
 import '../actions/add_new_product/select_product_type_and_directory/product_directory_search.dart';
@@ -63,7 +66,6 @@ class _item_productState extends State<item_product> {
       });
     }
   }
-
 
   @override
   void initState() {
@@ -153,44 +155,136 @@ class _item_productState extends State<item_product> {
           ),
 
           Container(
-            width: (width - 50)/5-1,
+            width: ((width - 50)/5)*2-1,
             child: Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: ListView(
-                children: [
-                  Container(height: 4,),
-
-                  // text_line_in_item(color: Colors.black,title: 'Số lượng tồn kho: ', content: product.inventory.toString()),
-                  //
-                  // Container(height: 8,),
-                  //
-                  // text_line_in_item(color: Colors.black,title: 'Giá tiền thực: ', content: getStringNumber(product.cost) + '.usdt'),
-                  //
-                  // Container(height: 8,),
-                  //
-                  // text_line_in_item(color: Colors.black,title: 'Giá tiền trước giảm: ', content: getStringNumber(product.costBeforeSale) + '.usdt'),
-
-                  Container(height: 8,),
-
-                  Container(
+              padding: EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 10,),
+              child: ListView.builder(
+                itemCount: product.dimensionList.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    height: 40,
                     alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      child: Text(
-                        'Cập nhật giá tiền',
-                        style: TextStyle(
-                          fontFamily: 'muli',
-                          color: Colors.blueAccent,
-                          fontSize: 14,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 0.5,
+                          color: Colors.black,
                         ),
                       ),
-                      onPressed: () {
-
-                      },
                     ),
-                  ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Tên phân loại: ',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
 
-                  Container(height: 10,),
-                ],
+                                    TextSpan(
+                                      text: product.dimensionList[index].name + ' ,',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+
+                                    TextSpan(
+                                      text: 'Giá tiền thực: ',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+
+                                    TextSpan(
+                                      text: getStringNumber(product.dimensionList[index].cost) + '.USDT, ',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+
+                                    TextSpan(
+                                      text: 'Tồn kho: ',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+
+                                    TextSpan(
+                                      text: product.dimensionList[index].inventory.toString(),
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Container(width: 0.5,),
+
+                        GestureDetector(
+                          child: Container(
+                            width: 39.5,
+                            child: Icon(
+                              Icons.delete_outline_sharp,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                          ),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return delete_dimension(index: index, product: product);
+                              },
+                            );
+                          },
+                        ),
+
+                        Container(width: 0.5,),
+
+                        GestureDetector(
+                          child: Container(
+                            width: 39.5,
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                          ),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return update_dimension(index: index, product: product);
+                              },
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -210,9 +304,9 @@ class _item_productState extends State<item_product> {
                 children: [
                   Container(height: 4,),
 
-                  text_line_in_item(color: Colors.black,title: 'Phân loại: ', content: productType),
+                  text_line_in_item(color: Colors.black,title: 'Danh mục: ', content: productDirect),
 
-                  Container(height: 8,),
+                  text_line_in_item(color: Colors.black,title: 'Phân loại: ', content: productType),
 
                   Container(
                     alignment: Alignment.centerLeft,
@@ -246,31 +340,6 @@ class _item_productState extends State<item_product> {
                       },
                     ),
                   ),
-
-                  Container(height: 10,),
-                ],
-              ),
-            ),
-          ),
-
-          Container(
-            width: 1,
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 240, 240, 240)
-            ),
-          ),
-
-          Container(
-            width: (width - 50)/5-1,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: ListView(
-                children: [
-                  Container(height: 4,),
-
-                  text_line_in_item(color: Colors.black,title: 'Danh mục: ', content: productDirect),
-
-                  Container(height: 8,),
 
                   Container(
                     alignment: Alignment.centerLeft,

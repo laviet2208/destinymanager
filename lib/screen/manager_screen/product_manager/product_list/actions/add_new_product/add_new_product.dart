@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:destinymanager/data/product/DataChangeHistory.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/add_product_dimension/product_dimension_select.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _add_new_productState extends State<add_new_product> {
   final nameController = TextEditingController();
   bool loading = false;
   final List<Uint8List> imageList = [];
-  Product product = Product(id: '', name: '', productType: '', showStatus: 0, createTime: getCurrentTime(), description: '', productDirectory: '', dimensionList: [], imageList: []);
+  Product product = Product(id: '', name: '', productType: '', showStatus: 1, createTime: getCurrentTime(), description: '', productDirectory: '', dimensionList: [], imageList: []);
 
   bool check_if_fill_all() {
     if (nameController.text.isNotEmpty && product.imageList.isNotEmpty && product.productType != '' && product.productDirectory != '' && product.dimensionList.isNotEmpty) {
@@ -39,6 +40,28 @@ class _add_new_productState extends State<add_new_product> {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       await databaseRef.child('productList').child(product.id).set(product.toJson());
+    } catch (error) {
+      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+      throw error;
+    }
+  }
+
+  Future<void> push_history(DataChangeHistory datachange) async{
+    try {
+      DatabaseReference databaseRef = FirebaseDatabase.instance.ref().child('DataChange');
+      final snapshot = await databaseRef.limitToLast(1).get();
+      if (snapshot.exists) {
+        final dynamic data = snapshot.value;
+        DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 0, productIdChange: '');
+        data.forEach((key, value) {
+          dataChangeHistory = DataChangeHistory.fromJson(value);
+        });
+        datachange.id = dataChangeHistory.id + 1;
+      } else {
+        datachange.id = 0;
+      }
+      databaseRef = FirebaseDatabase.instance.ref();
+      await databaseRef.child('DataChange').child(datachange.id.toString()).set(datachange.toJson());
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
@@ -286,6 +309,8 @@ class _add_new_productState extends State<add_new_product> {
                                   product.description = await controller.getText();
                                   product.name = nameController.text.toString();
                                   product.createTime = getCurrentTime();
+                                  DataChangeHistory changeHis = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 1, productIdChange: product.id);
+                                  await push_history(changeHis);
                                   await push_new_product(product);
                                   setState(() {
                                     loading = false;

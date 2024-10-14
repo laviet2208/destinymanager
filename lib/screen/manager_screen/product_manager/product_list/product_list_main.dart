@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../../data/product/Product.dart';
@@ -16,6 +17,7 @@ class _product_list_mainState extends State<product_list_main> {
   List<Product> productList = [];
   List<Product> chosenList = [];
   List<String> keyList = [];
+  List<String> title = ['Tên sản phẩm', 'Kích cỡ', 'Danh mục và phân loại', 'Thao tác'];
 
   void getData() {
     final reference = FirebaseDatabase.instance.ref();
@@ -129,7 +131,77 @@ class _product_list_mainState extends State<product_list_main> {
                       color: Color.fromARGB(255, 225, 225, 226)
                   )
               ),
-              child: heading_title(numberColumn: 5, listTitle: ['Tên sản phẩm', 'Kho', 'Nhà cung cấp', 'Danh mục', 'Thao tác'], width: width, height: 50),
+              child: Container(
+                width: width,
+                height: 50,
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 247, 250, 255),
+                    border: Border.all(
+                        width: 0.5,
+                        color: Color.fromARGB(255, 225, 225, 226)
+                    )
+                ),
+                child: ListView(
+                  physics: NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Container(
+                      width: 49,
+                    ),
+
+                    Container(
+                      width: 1,
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 225, 225, 226)
+                      ),
+                    ),
+
+                    Container(
+                      width: width - 50,
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            width: index != 1 ? ((width - 50)/(title.length.toDouble()+1)) : (((width - 50)/(title.length.toDouble()+1))*2),
+                            child: ListView(
+                              physics: NeverScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                Container(
+                                  width: index != 1 ? ((width - 50)/(title.length.toDouble()+1) - 1) : (((width - 50)/(title.length.toDouble()+1))*2 - 1),
+                                  child: Padding(
+                                      padding: EdgeInsets.only(left: 10, right: 10, top: 13, bottom: 13),
+                                      child: AutoSizeText(
+                                        title[index],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontFamily: 'muli',
+                                          color: Colors.black,
+                                          fontSize: 100,
+                                        ),
+                                      ),
+                                  ),
+                                  alignment: Alignment.center,
+                                ),
+
+                                Container(
+                                  width: 1,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 225, 225, 226),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
 
