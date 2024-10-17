@@ -3,6 +3,8 @@ import 'package:destinymanager/screen/manager_screen/ads_manager/ads_manager_mai
 import 'package:destinymanager/screen/manager_screen/product_manager/product_directory/product_directory_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/product_list_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_type/product_type_main_manager.dart';
+import 'package:destinymanager/screen/manager_screen/ui_manager/top_product_manager/top_product_manager.dart';
+import 'package:destinymanager/screen/manager_screen/ui_manager/ui_directory_manager/ui_directory_manager.dart';
 import 'package:flutter/material.dart';
 import '../../data/finalData.dart';
 import 'feature_type_1.dart';
@@ -65,7 +67,7 @@ class _main_manager_screenState extends State<main_manager_screen> {
     }
 
     if (init == 13) {
-
+      return ui_directory_manager();
     }
 
     if (init == 14) {
@@ -82,6 +84,10 @@ class _main_manager_screenState extends State<main_manager_screen> {
 
     if (init == 17) {
 
+    }
+
+    if (init == 18) {
+      return top_product_manager();
     }
 
     return Container();
@@ -407,6 +413,15 @@ class _main_manager_screenState extends State<main_manager_screen> {
                                   onTap: () {
                                     setState(() {
                                       finalData.selectButton = 15;
+                                    });
+                                  },
+                                ),
+
+                                GestureDetector(
+                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Top Products', thisIndex: 18,),
+                                  onTap: () {
+                                    setState(() {
+                                      finalData.selectButton = 18;
                                     });
                                   },
                                 ),
