@@ -91,6 +91,7 @@ class _add_top_productState extends State<add_top_product> {
                         } else {
                           toastMessage('Vui lòng đợi');
                           control.text = filteredList[index].name;
+                          Product product = Product(id: filteredList[index].id, name: filteredList[index].name, productType: '', showStatus: 1, createTime: filteredList[index].createTime, description: '', productDirectory: '', dimensionList: [], imageList: [filteredList[index].imageList[0]]);
                           widget.productList.add(filteredList[index]);
                           await push_new_list();
                           setState(() {

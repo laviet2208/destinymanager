@@ -28,8 +28,9 @@ class _item_top_productState extends State<item_top_product> {
     reference.child("productList").child(widget.id).onValue.listen((event) {
       final dynamic data = event.snapshot.value;
       product = Product.fromJson(data);
+      Product product1 = Product(id: product.id, name: product.name, productType: '', showStatus: 1, createTime: product.createTime, description: '', productDirectory: '', dimensionList: [], imageList: [product.imageList[0]]);
       final reference1 = FirebaseDatabase.instance.ref();
-      reference1.child('UI').child('productTop').child(widget.index.toString()).set(product.toJson());
+      reference1.child('UI').child('productTop').child(widget.index.toString()).set(product1.toJson());
       setState(() {
 
       });
