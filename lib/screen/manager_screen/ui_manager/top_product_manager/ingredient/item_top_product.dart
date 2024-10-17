@@ -12,7 +12,7 @@ import '../../../../../general_ingredient/utils.dart';
 class item_top_product extends StatefulWidget {
   final String id;
   final int index;
-  final List<String> productList;
+  final List<Product> productList;
   final VoidCallback event;
   const item_top_product({super.key, required this.id, required this.index, required this.productList, required this.event});
 
@@ -28,6 +28,8 @@ class _item_top_productState extends State<item_top_product> {
     reference.child("productList").child(widget.id).onValue.listen((event) {
       final dynamic data = event.snapshot.value;
       product = Product.fromJson(data);
+      final reference1 = FirebaseDatabase.instance.ref();
+      reference1.child('UI').child('productTop').child(widget.index.toString()).set(product.toJson());
       setState(() {
 
       });
@@ -150,7 +152,7 @@ class _item_top_productState extends State<item_top_product> {
                       } else {
                         widget.productList.removeAt(widget.index);
                         DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
-                        await databaseRef.child('UI').child('productTop').set(widget.productList.map((e) => e).toList());
+                        await databaseRef.child('UI').child('productTop').set(widget.productList.map((e) => e.toJson()).toList());
                         toastMessage('Xóa thành công');
                         widget.event();
                       }

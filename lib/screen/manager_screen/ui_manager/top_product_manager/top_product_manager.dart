@@ -1,3 +1,4 @@
+import 'package:destinymanager/data/product/Product.dart';
 import 'package:destinymanager/screen/manager_screen/ui_manager/top_product_manager/actions/add_top_product.dart';
 import 'package:destinymanager/screen/manager_screen/ui_manager/top_product_manager/ingredient/item_top_product.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -13,7 +14,7 @@ class top_product_manager extends StatefulWidget {
 }
 
 class _top_product_managerState extends State<top_product_manager> {
-  List<String> productList = [];
+  List<Product> productList = [];
 
   void get_top_product_ui() {
     final reference = FirebaseDatabase.instance.ref();
@@ -21,8 +22,7 @@ class _top_product_managerState extends State<top_product_manager> {
       productList.clear();
       final dynamic orders = event.snapshot.value;
       for (final result in orders) {
-        String id = result.toString();
-        productList.add(id);
+        productList.add(Product.fromJson(result));
       }
       setState(() {
 
@@ -114,7 +114,7 @@ class _top_product_managerState extends State<top_product_manager> {
                 itemCount: productList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return item_top_product(index: index, id: productList[index], productList: productList, event: () { setState(() {}); },);
+                  return item_top_product(index: index, id: productList[index].id, productList: productList, event: () { setState(() {}); },);
                 },
               ),
             ),

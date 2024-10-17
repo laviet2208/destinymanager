@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../../general_ingredient/utils.dart';
 
 class add_top_product extends StatefulWidget {
-  final List<String> productList;
+  final List<Product> productList;
   const add_top_product({super.key, required this.productList});
 
   @override
@@ -25,7 +25,7 @@ class _add_top_productState extends State<add_top_product> {
       final dynamic orders = event.snapshot.value;
       orders.forEach((key, value) {
         Product product = Product.fromJson(value);
-        if (!widget.productList.contains(product.id) && product.showStatus != 0) {
+        if (!widget.productList.contains(product) && product.showStatus != 0) {
           product_list.add(product);
           filteredList = product_list.where((product) => product.name.toLowerCase().contains(query.toLowerCase())).toList();
         }
@@ -39,7 +39,7 @@ class _add_top_productState extends State<add_top_product> {
   Future<void> push_new_list() async{
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
-      await databaseRef.child('UI').child('productTop').set(widget.productList.map((e) => e).toList());
+      await databaseRef.child('UI').child('productTop').set(widget.productList.map((e) => e.toJson()).toList());
       toastMessage('Cập nhật thành công');
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -91,7 +91,7 @@ class _add_top_productState extends State<add_top_product> {
                         } else {
                           toastMessage('Vui lòng đợi');
                           control.text = filteredList[index].name;
-                          widget.productList.add(filteredList[index].id);
+                          widget.productList.add(filteredList[index]);
                           await push_new_list();
                           setState(() {
 
