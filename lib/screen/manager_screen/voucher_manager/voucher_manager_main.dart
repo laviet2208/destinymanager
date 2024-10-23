@@ -1,33 +1,50 @@
-import 'package:destinymanager/general_ingredient/utils.dart';
+import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../../../general_ingredient/heading_title.dart';
+import 'actions/add_new_voucher.dart';
+import 'ingredient/voucher_item.dart';
 
-import '../../../../general_ingredient/heading_title.dart';
-import 'actions/add_ui_directory.dart';
-import 'ingredient/item_ui_directory.dart';
-
-class ui_directory_manager extends StatefulWidget {
-  const ui_directory_manager({super.key});
+class voucher_manager_main extends StatefulWidget {
+  const voucher_manager_main({super.key});
 
   @override
-  State<ui_directory_manager> createState() => _ui_directory_managerState();
+  State<voucher_manager_main> createState() => _voucher_manager_mainState();
 }
 
-class _ui_directory_managerState extends State<ui_directory_manager> {
-  List<String> directoryList = [];
+class _voucher_manager_mainState extends State<voucher_manager_main> {
+  List<String> keyList = [];
 
-  void get_directory_ui() {
+  void getData() {
     final reference = FirebaseDatabase.instance.ref();
-    reference.child('UI').child('productDirectory').onValue.listen((event) {
-      directoryList.clear();
-      final dynamic orders = event.snapshot.value;
-      for (final result in orders) {
-        String id = result.toString();
-        directoryList.add(id);
-      }
-      setState(() {
+    int totalDataSize = 0;
 
-      });
+    reference.child("Voucher").onChildAdded.listen((event) {
+      final dynamic key = event.snapshot.key;
+
+      if (key != null && !keyList.contains(key)) {
+        keyList.add(key.toString());
+
+        // Tính kích thước dữ liệu
+        String jsonString = jsonEncode(key.toString());
+        totalDataSize += utf8.encode(jsonString).length;
+
+        setState(() {});
+      }
+    });
+
+    reference.child("Voucher").onChildRemoved.listen((event) {
+      final dynamic key = event.snapshot.key;
+
+      if (key != null && keyList.contains(key)) {
+        keyList.remove(key);
+
+        // Tính kích thước dữ liệu
+        String jsonString = jsonEncode(key.toString());
+        totalDataSize += utf8.encode(jsonString).length;
+
+        setState(() {});
+      }
     });
   }
 
@@ -35,7 +52,7 @@ class _ui_directory_managerState extends State<ui_directory_manager> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    get_directory_ui();
+    getData();
   }
 
   @override
@@ -56,14 +73,14 @@ class _ui_directory_managerState extends State<ui_directory_manager> {
             child: GestureDetector(
               child: Container(
                 height: 40,
-                width: 180,
+                width: 210,
                 decoration: BoxDecoration(
                     color: Colors.yellow,
                     border: Border.all()
                 ),
                 child: Center(
                   child: Text(
-                    '+ Thêm danh mục hiển thị',
+                    '+ Thêm Voucher',
                     style: TextStyle(
                         fontFamily: 'muli',
                         color: Colors.black,
@@ -74,16 +91,12 @@ class _ui_directory_managerState extends State<ui_directory_manager> {
                 ),
               ),
               onTap: () {
-                if (directoryList.length < 2) {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(content: add_ui_directory(directoryList: directoryList), title: Text('Chọn danh mục hiển thị'),);
-                    },
-                  );
-                } else {
-                  toastMessage('Tối đa hiển thị 2 danh mục');
-                }
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return add_new_voucher();
+                  },
+                );
               },
             ),
           ),
@@ -102,7 +115,7 @@ class _ui_directory_managerState extends State<ui_directory_manager> {
                       color: Color.fromARGB(255, 225, 225, 226)
                   )
               ),
-              child: heading_title(numberColumn: 3, listTitle: ['Thông tin danh mục', 'Thời gian tạo', 'Thao tác'], width: width, height: 50),
+              child: heading_title(numberColumn: 5, listTitle: ['Thông tin sự kiện', 'Thời gian khả dụng', 'Giá trị voucher', 'Thông tin khách hàng','Thao tác',], width: width, height: 50),
             ),
           ),
 
@@ -116,10 +129,10 @@ class _ui_directory_managerState extends State<ui_directory_manager> {
                   color: Color.fromARGB(255, 255, 255, 255)
               ),
               child: ListView.builder(
-                itemCount: directoryList.length,
+                itemCount: keyList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return item_ui_directory(index: index, id: directoryList[index], directoryList: directoryList, event: () { setState(() {}); },);
+                  return voucher_item(id: keyList[index], index: index);
                 },
               ),
             ),
