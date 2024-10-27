@@ -1,3 +1,4 @@
+import 'package:destinymanager/general_ingredient/utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../../data/Account/Account.dart';
@@ -21,7 +22,7 @@ class item_customer extends StatefulWidget {
 }
 
 class _item_customerState extends State<item_customer> {
-  Account account = Account(id: '', username: '', password: '', address: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: []);
+  Account account = Account(id: '', username: '', password: '', address: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: [], referralCode: '');
   bool haveMes = false;
   void get_account() {
     if (widget.id != '') {
@@ -163,6 +164,10 @@ class _item_customerState extends State<item_customer> {
                 children: [
                   Container(height: 4,),
 
+                  text_line_in_item(color: Colors.black,title: 'Mã GT : ', content: account.referralCode),
+
+                  Container(height: 8,),
+
                   text_line_in_item(color: Colors.black,title: 'Tên KH : ', content: account.firstName + ' ' + account.lastName),
 
                   Container(height: 8,),
@@ -194,13 +199,30 @@ class _item_customerState extends State<item_customer> {
                 children: [
                   Container(height: 4,),
 
-                  text_line_in_item(color: account.lockstatus == 0 ? Colors.red : Colors.green, title: 'Trạng thái : ', content: account.lockstatus == 0 ? 'Tài khoản đang khóa' : 'Tài khoản đang mở'),
+                  text_line_in_item(color: account.lockstatus == 2 ? Colors.green : Colors.red, title: 'Trạng thái : ', content: account.lockstatus == 0 ? 'Tài khoản đang khóa' : (account.lockstatus == 1 ? 'Chưa nhập mã' : 'Tài khoản đang mở')),
 
                   Container(height: 8,),
 
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      if (account.lockstatus == 1) {
+                        toastMessage('Không thể khóa tài khoản chưa kích hoạt');
+                      }
+                      if (account.lockstatus == 2) {
+                        final reference = FirebaseDatabase.instance.ref();
+                        await reference.child('Account').child(account.id).child('lockstatus').set(0);
+                        toastMessage('Khóa thành công');
+                        setState(() {
 
+                        });
+                      } else {
+                        final reference = FirebaseDatabase.instance.ref();
+                        await reference.child('Account').child(account.id).child('lockstatus').set(2);
+                        toastMessage('Mở thành công');
+                        setState(() {
+
+                        });
+                      }
                     },
                     child: Container(
                       alignment: Alignment.centerLeft,
@@ -367,40 +389,6 @@ class _item_customerState extends State<item_customer> {
                   ),
 
                   Container(height: 4,),
-
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 10, right: 10),
-                  //   child: GestureDetector(
-                  //     child: Container(
-                  //       height: 30,
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.redAccent,
-                  //         border: Border.all(
-                  //             width: 1,
-                  //             color: Colors.black
-                  //         ),
-                  //       ),
-                  //       child: Center(
-                  //         child: Text(
-                  //           'Xóa tài khoản',
-                  //           style: TextStyle(
-                  //             color: Colors.white,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     onTap: () {
-                  //       showDialog(
-                  //         context: context,
-                  //         builder: (context) {
-                  //           return delete_account(account: account);
-                  //         },
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
-                  //
-                  // Container(height: 4,),
                 ],
               ),
             ),

@@ -1,7 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:destinymanager/screen/manager_screen/ads_manager/ads_manager_main.dart';
 import 'package:destinymanager/screen/manager_screen/customer_manager/customer_manager.dart';
+import 'package:destinymanager/screen/manager_screen/flashsale_manager/product_in_flashsale/product_list_in_flash_sale.dart';
+import 'package:destinymanager/screen/manager_screen/flashsale_manager/voucher_list_manager/voucher_manager_main.dart';
+import 'package:destinymanager/screen/manager_screen/money_request_manager/money_request_manager.dart';
 import 'package:destinymanager/screen/manager_screen/notice_manager/notice_manager_main.dart';
+import 'package:destinymanager/screen/manager_screen/order_manager/order_manager_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_directory/product_directory_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/product_list_main.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_type/product_type_main_manager.dart';
@@ -46,11 +50,11 @@ class _main_manager_screenState extends State<main_manager_screen> {
     }
 
     if (init == 7) {
-
+      return order_manager_main();
     }
 
     if (init == 8) {
-
+      return money_request_manager();
     }
 
     if (init == 9) {
@@ -82,11 +86,11 @@ class _main_manager_screenState extends State<main_manager_screen> {
     }
 
     if (init == 16) {
-
+      return voucher_manager_main_fl();
     }
 
     if (init == 17) {
-
+      return product_list_in_flash_sale();
     }
 
     if (init == 18) {
@@ -430,15 +434,6 @@ class _main_manager_screenState extends State<main_manager_screen> {
                                 ),
 
                                 GestureDetector(
-                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Hiển thị phân loại sp', thisIndex: 16,),
-                                  onTap: () {
-                                    setState(() {
-                                      finalData.selectButton = 16;
-                                    });
-                                  },
-                                ),
-
-                                GestureDetector(
                                   child: feature_type_1(selectButton: finalData.selectButton, title: 'Danh mục chính', thisIndex: 13,),
                                   onTap: () {
                                     setState(() {
@@ -485,6 +480,57 @@ class _main_manager_screenState extends State<main_manager_screen> {
                                   onTap: () {
                                     setState(() {
                                       finalData.selectButton = 5;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+
+                            Container(
+                              height: 1,
+                              decoration: BoxDecoration(
+                                  color: Colors.white
+                              ),
+                            ),
+
+                            ExpansionTile(
+                              leading: Icon(
+                                Icons.flash_on,
+                                color: Colors.white,
+                              ),
+                              iconColor: Colors.white,
+                              collapsedIconColor: Colors.white,
+                              title: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child : Padding(
+                                    padding: EdgeInsets.only(top: 15,bottom: 15),
+                                    child: Text(
+                                      'Quản lý flashsale',
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  )
+                              ),
+                              children: [
+                                GestureDetector(
+                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Danh sách sản phẩm', thisIndex: 17,),
+                                  onTap: () {
+                                    setState(() {
+                                      finalData.selectButton = 17;
+                                    });
+                                  },
+                                ),
+
+                                GestureDetector(
+                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Danh sách voucher', thisIndex: 16,),
+                                  onTap: () {
+                                    setState(() {
+                                      finalData.selectButton = 16;
                                     });
                                   },
                                 ),

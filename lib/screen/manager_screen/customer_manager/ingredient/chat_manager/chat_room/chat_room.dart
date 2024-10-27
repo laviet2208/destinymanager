@@ -15,7 +15,7 @@ class chatRoomScreen extends StatefulWidget {
 }
 
 class _chatRoomScreenState extends State<chatRoomScreen> {
-  chatRoom room = chatRoom(account: Account(id: '', username: '', password: '', address: '', createTime: getCurrentTime(), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: []), messengerList: []);
+  chatRoom room = chatRoom(account: Account(id: '', username: '', password: '', address: '', createTime: getCurrentTime(), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: [], referralCode: ''), messengerList: []);
   bool Loading = false;
   void getChatRoom() {
     final reference = FirebaseDatabase.instance.ref();

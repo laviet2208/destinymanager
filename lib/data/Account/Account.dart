@@ -10,11 +10,12 @@ class Account {
   double money;
   String address;
   String phoneNum;
+  String referralCode;
   List<Voucher> voucherList;
   int lockstatus;
   Time createTime;
 
-  Account({required this.id, required this.username, required this.password, required this.address, required this.createTime, required this.money, required this.firstName, required this.lastName, required this.phoneNum, required this.lockstatus, required this.voucherList});
+  Account({required this.id, required this.username, required this.password, required this.address, required this.createTime, required this.money, required this.firstName, required this.lastName, required this.phoneNum, required this.lockstatus, required this.voucherList, required this.referralCode});
 
   Map<dynamic, dynamic> toJson() => {
     'id': id,
@@ -27,6 +28,7 @@ class Account {
     'address': address,
     'phoneNum': phoneNum,
     'lockstatus': lockstatus,
+    'referralCode': referralCode,
     'voucherList': voucherList.map((e) => e.toJson()).toList(),
   };
 
@@ -51,6 +53,7 @@ class Account {
       lockstatus: int.parse(json['lockstatus'].toString()),
       createTime: Time.fromJson(json['createTime']),
       voucherList: prdList,
+      referralCode: json['referralCode'].toString(),
     );
   }
 }

@@ -1,29 +1,32 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../../../../../../data/otherData/Tool.dart';
-import '../../../../../../data/product/ProductDirectory.dart';
-import '../../../../../../general_ingredient/text_line_in_item.dart';
-import '../../actions/change_directory_name/change_directory_name.dart';
-import '../view_product_list/directory_view_product_list.dart';
+import '../../../../../data/otherData/Tool.dart';
+import '../../../../../data/product/Product.dart';
+import '../../../../../general_ingredient/text_line_in_item.dart';
+import '../../../../../general_ingredient/utils.dart';
 
-class product_directory_item extends StatefulWidget {
+class item_product_flashsale extends StatefulWidget {
   final String id;
   final int index;
-  final ProductDirectory directory;
-  const product_directory_item({super.key, required this.id, required this.index, required this.directory,});
+  final List<String> productList;
+  final VoidCallback event;
+  const item_product_flashsale({super.key, required this.id, required this.index, required this.productList, required this.event});
 
   @override
-  State<product_directory_item> createState() => _product_directory_itemState();
+  State<item_product_flashsale> createState() => _item_product_flashsaleState();
 }
 
-class _product_directory_itemState extends State<product_directory_item> {
-  ProductDirectory directory = ProductDirectory(id: '', name: '', createTime: getCurrentTime(), status: 1);
+class _item_product_flashsaleState extends State<item_product_flashsale> {
+  Product product = Product(id: '', name: '', productType: '', showStatus: 0, createTime: getCurrentTime(), description: '', productDirectory: '', dimensionList: [], imageList: []);
 
-  void get_directory_data() {
+  void get_product_data() {
     final reference = FirebaseDatabase.instance.ref();
-    reference.child("productDirectory").child(widget.id).onValue.listen((event) {
+    reference.child("productList").child(widget.id).onValue.listen((event) {
       final dynamic data = event.snapshot.value;
-      directory = ProductDirectory.fromJson(data);
+      product = Product.fromJson(data);
       setState(() {
 
       });
@@ -34,12 +37,12 @@ class _product_directory_itemState extends State<product_directory_item> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    get_directory_data();
+    get_product_data();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    double height = 100;
+    double height = 120;
     double width = MediaQuery.of(context).size.width - 20;
     return Container(
       width: width,
@@ -88,30 +91,11 @@ class _product_directory_itemState extends State<product_directory_item> {
                 children: [
                   Container(height: 4,),
 
-                  text_line_in_item(color: Colors.black,title: 'Tên danh mục: ', content: directory.name),
-                  
-                  Container(height: 10,),
-                ],
-              ),
-            ),
-          ),
+                  text_line_in_item(color: Colors.black,title: 'Mã sản phẩm: ', content: product.id),
 
-          Container(
-            width: 1,
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 240, 240, 240)
-            ),
-          ),
-
-          Container(
-            width: (width - 50)/3-1,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: ListView(
-                children: [
                   Container(height: 4,),
 
-                  text_line_in_item(color: Colors.black,title: 'Thời gian tạo: ', content: getAllTimeString(directory.createTime)),
+                  text_line_in_item(color: Colors.black,title: 'Tên sản phẩm: ', content: product.name),
 
                   Container(height: 10,),
                 ],
@@ -130,38 +114,48 @@ class _product_directory_itemState extends State<product_directory_item> {
             width: (width - 50)/3-1,
             alignment: Alignment.center,
             child: Padding(
-              padding: EdgeInsets.only(left: 5, right: 15),
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 0.5,),
+                ),
+                alignment: Alignment.center,
+                child: Image.memory(Uint8List.fromList(base64Decode(product.imageList[0]))),
+              ),
+            ),
+          ),
+
+          Container(
+            width: 1,
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 240, 240, 240)
+            ),
+          ),
+
+          Container(
+            width: (width - 50)/3-1,
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.only(left: 10, right: 5),
               child: ListView(
                 children: [
                   Container(height: 10,),
 
-                  GestureDetector(
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                          color: Colors.yellow,
-                          border: Border.all(width: 0.5, color: Colors.black)
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Thay đổi tên',
-                          style: TextStyle(
-                            fontFamily: 'muli',
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  TextButton(
+                    onPressed: () async {
+                      widget.productList.removeAt(widget.index);
+                      DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+                      await databaseRef.child('Flashsale').child('product').set(widget.productList.map((e) => e).toList());
+                      toastMessage('Xóa thành công');
+                      widget.event();
+                    },
+                    child: Text(
+                      'Bỏ hiển thị',
+                      style: TextStyle(
+                        color: Colors.red,
                       ),
                     ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return change_directory_name(directory: directory);
-                        },
-                      );
-                    },
                   ),
 
                   Container(height: 10,),

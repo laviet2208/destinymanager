@@ -1,19 +1,19 @@
-import 'package:destinymanager/data/product/Product.dart';
 import 'package:destinymanager/general_ingredient/item_product_search_for_add.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../data/product/Product.dart';
 import '../../../../../general_ingredient/utils.dart';
 
-class add_top_product extends StatefulWidget {
-  final List<Product> productList;
-  const add_top_product({super.key, required this.productList});
+class add_product_flashsale extends StatefulWidget {
+  final List<String> productList;
+  const add_product_flashsale({super.key, required this.productList});
 
   @override
-  State<add_top_product> createState() => _add_top_productState();
+  State<add_product_flashsale> createState() => _add_product_flashsaleState();
 }
 
-class _add_top_productState extends State<add_top_product> {
+class _add_product_flashsaleState extends State<add_product_flashsale> {
   String query = '';
   final control = TextEditingController();
   List<Product> filteredList = [];
@@ -40,7 +40,7 @@ class _add_top_productState extends State<add_top_product> {
   Future<void> push_new_list() async{
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
-      await databaseRef.child('UI').child('productTop').set(widget.productList.map((e) => e.toJson()).toList());
+      await databaseRef.child('Flashsale').child('product').set(widget.productList.map((e) => e).toList());
       toastMessage('Cập nhật thành công');
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -58,7 +58,7 @@ class _add_top_productState extends State<add_top_product> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 400,
+      width: 600,
       height: 400,
       child: Padding(
         padding: EdgeInsets.only(left: 10),
@@ -72,7 +72,7 @@ class _add_top_productState extends State<add_top_product> {
                 });
               },
               decoration: InputDecoration(
-                labelText: 'Tìm kiếm danh mục sản phẩm',
+                labelText: 'Tìm kiếm sản phẩm',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -85,22 +85,18 @@ class _add_top_productState extends State<add_top_product> {
                       color: Colors.transparent,
                     ),
                     child: ListTile(
+                      // title: Text(filteredList[index].name),
                       title: item_product_search_for_add(product: filteredList[index]),
                       onTap: () async {
-                        if (widget.productList.length == 5) {
-                          toastMessage('Chỉ tối đa 5 top products');
-                        } else {
-                          toastMessage('Vui lòng đợi');
-                          control.text = filteredList[index].name;
-                          Product product = Product(id: filteredList[index].id, name: filteredList[index].name, productType: '', showStatus: 1, createTime: filteredList[index].createTime, description: '', productDirectory: '', dimensionList: [], imageList: [filteredList[index].imageList[0]]);
-                          widget.productList.add(filteredList[index]);
-                          await push_new_list();
-                          setState(() {
+                        toastMessage('Vui lòng đợi');
+                        control.text = filteredList[index].name;
+                        widget.productList.add(filteredList[index].id);
+                        await push_new_list();
+                        setState(() {
 
-                          });
-                          toastMessage('Thêm thành công');
-                          Navigator.of(context).pop();
-                        }
+                        });
+                        toastMessage('Thêm thành công');
+                        Navigator.of(context).pop();
                       },
                     ),
                   );

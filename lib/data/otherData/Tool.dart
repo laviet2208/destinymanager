@@ -1,4 +1,8 @@
 import 'dart:math';
+import '../cartData/CartData.dart';
+import '../orderData/Order.dart';
+import '../product/Dimension.dart';
+import '../voucherData/Voucher.dart';
 import 'Time.dart';
 
 Time getCurrentTime() {
@@ -47,30 +51,97 @@ int calculateDiscountPercentage(double originalPrice, double discountedPrice) {
   return discount.round();
 }
 
-// double calculatetotalMoney(Order order) {
-//   double cost = 0;
-//   for (Cartdata cartdata in order.productList) {
-//     cost = cost + cartdata.product.cost * cartdata.number;
-//   }
-//   return cost;
-// }
-//
-// double getVoucherSale(Voucher voucher, double cost) {
-//   double money = 0;
-//
-//   if(voucher.Money < 100) {
-//     double mn = cost * voucher.Money/100;
-//     if (mn <= voucher.maxSale) {
-//       money = mn;
-//     } else {
-//       money = voucher.maxSale;
-//     }
-//   } else {
-//     money = voucher.Money;
-//   }
-//
-//   return money;
-// }
+
+
+double calculatetotalMoney(Order order) {
+  double cost = 0;
+  for (Cartdata cartdata in order.productList) {
+    cost = cost + cartdata.dimension.cost * cartdata.number;
+  }
+  return cost;
+}
+
+double getVoucherSale(Voucher voucher, double cost) {
+  double money = 0;
+
+  if(voucher.maxSale != 0) {
+    double mn = cost * voucher.Money/100;
+    if (mn <= voucher.maxSale) {
+      money = mn;
+    } else {
+      money = voucher.maxSale;
+    }
+  } else {
+    money = voucher.Money;
+  }
+
+  return money;
+}
+
+String getCostBeforeSaleString(List<Dimension> list) {
+  String costString = '';
+  double maxCostBf = 0;
+  double minCostBf = list.first.costBfSale;
+  for (int i = 0; i < list.length; i++) {
+    if (list[i].costBfSale > maxCostBf) {
+      maxCostBf = list[i].costBfSale;
+    }
+
+    if (list[i].costBfSale < minCostBf) {
+      minCostBf = list[i].costBfSale;
+    }
+  }
+  if (maxCostBf != 0 && minCostBf != 0) {
+    costString = getStringNumber(maxCostBf) + ' - ' + getStringNumber(minCostBf) + '.USDT';
+  }
+
+  if (maxCostBf == 0 && minCostBf != 0) {
+    costString = getStringNumber(minCostBf) + '.USDT';
+  }
+
+  if (maxCostBf != 0 && minCostBf == 0) {
+    costString = getStringNumber(maxCostBf) + '.USDT';
+  }
+
+  if (maxCostBf == minCostBf && maxCostBf != 0) {
+    costString = getStringNumber(maxCostBf) + '.USDT';
+  }
+
+  return costString;
+}
+
+String getCostString(List<Dimension> list) {
+  String costString = '';
+  double maxCost = 0;
+  double minCost = list.first.cost;
+  for (int i = 0; i < list.length; i++) {
+    if (list[i].cost > maxCost) {
+      maxCost = list[i].cost;
+    }
+
+    if (list[i].cost < minCost) {
+      minCost = list[i].cost;
+    }
+  }
+
+  if (maxCost != 0 && minCost != 0) {
+    costString = getStringNumber(maxCost) + ' - ' + getStringNumber(minCost) + '.USDT';
+  }
+
+  if (maxCost == 0 && minCost != 0) {
+    costString = getStringNumber(minCost) + '.USDT';
+  }
+
+  if (maxCost != 0 && minCost == 0) {
+    costString = getStringNumber(maxCost) + '.USDT';
+  }
+
+  if (maxCost == minCost) {
+    costString = getStringNumber(maxCost) + '.USDT';
+  }
+
+  return costString;
+}
 
 String generateID(int count) {
   final character = "0123456789";

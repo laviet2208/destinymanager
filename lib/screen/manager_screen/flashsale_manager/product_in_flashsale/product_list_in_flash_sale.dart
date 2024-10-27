@@ -1,70 +1,40 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../../../../data/product/ProductDirectory.dart';
-import '../../../../general_ingredient/heading_title.dart';
-import 'actions/add_new_prodcut_directory/add_new_product_directory.dart';
-import 'ingredient/item/product_directory_item.dart';
 
-class product_directory_main extends StatefulWidget {
-  const product_directory_main({super.key});
+import '../../../../data/product/Product.dart';
+import '../../../../general_ingredient/heading_title.dart';
+import 'actions/add_product_flashsale.dart';
+import 'ingredient/item_product_flashsale.dart';
+
+class product_list_in_flash_sale extends StatefulWidget {
+  const product_list_in_flash_sale({super.key});
 
   @override
-  State<product_directory_main> createState() => _product_directory_mainState();
+  State<product_list_in_flash_sale> createState() => _product_list_in_flash_saleState();
 }
 
-class _product_directory_mainState extends State<product_directory_main> {
-  List<ProductDirectory> directList = [];
-  List<ProductDirectory> chosenList = [];
+class _product_list_in_flash_saleState extends State<product_list_in_flash_sale> {
+  List<String> productList = [];
 
-  void getData() {
+  void get_top_product_ui() {
     final reference = FirebaseDatabase.instance.ref();
-    reference.child("productDirectory").onValue.listen((event) {
-      directList.clear();
-      chosenList.clear();
-      setState(() {
-
-      });
+    reference.child('Flashsale').child('product').onValue.listen((event) {
+      productList.clear();
       final dynamic orders = event.snapshot.value;
-      orders.forEach((key, value) {
-        ProductDirectory directory = ProductDirectory.fromJson(value);
-        directList.add(directory);
-        chosenList.add(directory);
-      });
+      for (final result in orders) {
+        productList.add(result.toString());
+      }
       setState(() {
 
       });
     });
   }
-
-  void sortChosenListByCreateTime(List<ProductDirectory> chosenList) {
-    chosenList.sort((a, b) {
-      // Sắp xếp theo thời gian tạo giảm dần (mới nhất lên đầu)
-      return b.createTime.year.compareTo(a.createTime.year) != 0
-          ? b.createTime.year.compareTo(a.createTime.year)
-          : (b.createTime.month.compareTo(a.createTime.month) != 0
-          ? b.createTime.month.compareTo(a.createTime.month)
-          : (b.createTime.day.compareTo(a.createTime.day) != 0
-          ? b.createTime.day.compareTo(a.createTime.day)
-          : (b.createTime.hour.compareTo(a.createTime.hour) != 0
-          ? b.createTime.hour.compareTo(a.createTime.hour)
-          : (b.createTime.minute.compareTo(a.createTime.minute) != 0
-          ? b.createTime.minute.compareTo(a.createTime.minute)
-          : b.createTime.second.compareTo(a.createTime.second)))));
-    });
-  }
-
-  void sortChosenListByName(List<ProductDirectory> chosenList) {
-    chosenList.sort((a, b) {
-      return a.name.compareTo(b.name);
-    });
-  }
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getData();
+    get_top_product_ui();
   }
 
   @override
@@ -72,10 +42,11 @@ class _product_directory_mainState extends State<product_directory_main> {
     double width = MediaQuery.of(context).size.width - 20;
     double height = MediaQuery.of(context).size.height - 80;
     return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: Colors.white,
       ),
-      width: width,
       child: Stack(
         children: <Widget>[
           Positioned(
@@ -84,14 +55,14 @@ class _product_directory_mainState extends State<product_directory_main> {
             child: GestureDetector(
               child: Container(
                 height: 40,
-                width: 210,
+                width: 180,
                 decoration: BoxDecoration(
                     color: Colors.yellow,
                     border: Border.all()
                 ),
                 child: Center(
                   child: Text(
-                    '+ Thêm danh mục sản phẩm',
+                    '+ Thêm flash products',
                     style: TextStyle(
                         fontFamily: 'muli',
                         color: Colors.black,
@@ -105,11 +76,7 @@ class _product_directory_mainState extends State<product_directory_main> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return add_new_product_directory(event: () {
-                      setState(() {
-
-                      });
-                    });
+                    return AlertDialog(content: add_product_flashsale(productList: productList,), title: Text('Chọn sản phẩm'),);
                   },
                 );
               },
@@ -130,7 +97,7 @@ class _product_directory_mainState extends State<product_directory_main> {
                       color: Color.fromARGB(255, 225, 225, 226)
                   )
               ),
-              child: heading_title(numberColumn: 3, listTitle: ['Thông tin danh mục', 'Thời gian tạo', 'Thao tác'], width: width, height: 50),
+              child: heading_title(numberColumn: 3, listTitle: ['Thông tin sản phẩm', 'Hình ảnh', 'Thao tác'], width: width, height: 50),
             ),
           ),
 
@@ -144,10 +111,10 @@ class _product_directory_mainState extends State<product_directory_main> {
                   color: Color.fromARGB(255, 255, 255, 255)
               ),
               child: ListView.builder(
-                itemCount: chosenList.length,
+                itemCount: productList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return product_directory_item(directory: chosenList[index], index: index, id: chosenList[index].id,);
+                  return item_product_flashsale(index: index, id: productList[index], productList: productList, event: () { setState(() {}); },);
                 },
               ),
             ),

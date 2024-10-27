@@ -1,24 +1,23 @@
-import 'package:destinymanager/screen/manager_screen/product_manager/product_type/actions/edit_product_type/edit_product_type.dart';
 import 'package:flutter/material.dart';
-import '../../../../../../data/otherData/Tool.dart';
-import '../../../../../../data/product/ProductType.dart';
-import '../../../../../../general_ingredient/text_line_in_item.dart';
 
-class product_type_item extends StatefulWidget {
-  final ProductType type;
+import '../../../../data/cartData/CartData.dart';
+import '../../../../data/otherData/Tool.dart';
+import '../../../../general_ingredient/text_line_in_item.dart';
+
+class item_product_in_order extends StatefulWidget {
+  final Cartdata cartdata;
   final int index;
-  const product_type_item({super.key, required this.type, required this.index});
+  const item_product_in_order({super.key, required this.cartdata, required this.index});
 
   @override
-  State<product_type_item> createState() => _product_type_itemState();
+  State<item_product_in_order> createState() => _item_product_in_orderState();
 }
 
-class _product_type_itemState extends State<product_type_item> {
+class _item_product_in_orderState extends State<item_product_in_order> {
   @override
   Widget build(BuildContext context) {
-    double height = 70;
-    double width = MediaQuery.of(context).size.width - 20;
-
+    double width = MediaQuery.of(context).size.width/3*2;
+    double height = 150;
     return Container(
       width: width,
       height: height,
@@ -64,13 +63,13 @@ class _product_type_itemState extends State<product_type_item> {
               padding: EdgeInsets.only(left: 10, right: 10),
               child: ListView(
                 children: [
-                  Container(height: 10,),
+                  Container(height: 4,),
 
-                  text_line_in_item(color: Colors.black,title: 'Tên phân loại: ', content: widget.type.name),
+                  text_line_in_item(color: Colors.black,title: 'Mã sản phẩm: ', content: widget.cartdata.product.id),
 
-                  Container(height: 10,),
+                  Container(height: 8,),
 
-                  // text_line_in_item(color: Colors.black,title: 'Số sản phẩm loại này: ', content: widget.type.productList.length.toString()),
+                  text_line_in_item(color: Colors.black,title: 'Tên sản phẩm: ', content: widget.cartdata.product.name),
 
                   Container(height: 10,),
                 ],
@@ -91,9 +90,17 @@ class _product_type_itemState extends State<product_type_item> {
               padding: EdgeInsets.only(left: 10, right: 10),
               child: ListView(
                 children: [
-                  Container(height: 10,),
+                  Container(height: 4,),
 
-                  text_line_in_item(color: Colors.black,title: 'Thời gian tạo: ', content: getAllTimeString(widget.type.createTime)),
+                  text_line_in_item(color: Colors.black,title: 'Số lượng: ', content: widget.cartdata.number.toString()),
+
+                  Container(height: 8,),
+
+                  text_line_in_item(color: Colors.black,title: 'Đơn giá: ', content: getStringNumber(widget.cartdata.dimension.cost) + '.usdt'),
+
+                  Container(height: 8,),
+
+                  text_line_in_item(color: Colors.black,title: 'Thành tiền: ', content: getStringNumber(widget.cartdata.dimension.cost * widget.cartdata.number) + '.usdt'),
 
                   Container(height: 10,),
                 ],
@@ -109,39 +116,23 @@ class _product_type_itemState extends State<product_type_item> {
           ),
 
           Container(
-            width: (width - 50)/3-10,
+            width: (width - 50)/3-1,
             child: Padding(
-              padding: EdgeInsets.only(left: 10, right: 10, top: 5),
+              padding: EdgeInsets.only(left: 10, right: 10),
               child: ListView(
                 children: [
-                  GestureDetector(
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Chỉnh sửa',
-                          style: TextStyle(
-                            fontFamily: 'muli',
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return edit_product_type(type: widget.type, event: () { setState(() {}); },);
-                        },
-                      );
-                    },
-                  ),
+                  Container(height: 4,),
+
+                  Container(height: 10,),
                 ],
               ),
+            ),
+          ),
+
+          Container(
+            width: 1,
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 240, 240, 240)
             ),
           ),
         ],
