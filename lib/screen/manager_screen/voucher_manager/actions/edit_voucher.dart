@@ -116,6 +116,7 @@ class _edit_voucherState extends State<edit_voucher> {
     super.initState();
     chosenType = TypeList[widget.voucher.type];
     typeIndex = widget.voucher.type;
+    macodecontrol.text = widget.voucher.id;
     tenchuongtrinhcontrol.text = widget.voucher.eventName;
     ngaybatdaucontrol.text = getDayTimeString(widget.voucher.startTime);
     ngayketthuccontrol.text = getDayTimeString(widget.voucher.endTime);

@@ -12,6 +12,7 @@ import 'package:destinymanager/screen/manager_screen/product_manager/product_typ
 import 'package:destinymanager/screen/manager_screen/ui_manager/top_product_manager/top_product_manager.dart';
 import 'package:destinymanager/screen/manager_screen/ui_manager/ui_directory_manager/ui_directory_manager.dart';
 import 'package:destinymanager/screen/manager_screen/voucher_manager/voucher_manager_main.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../data/finalData.dart';
 import 'feature_type_1.dart';
@@ -24,6 +25,25 @@ class main_manager_screen extends StatefulWidget {
 }
 
 class _main_manager_screenState extends State<main_manager_screen> {
+  List<String> keyList = [];
+  void getRequestData() {
+    final reference = FirebaseDatabase.instance.ref();
+    reference.child("MoneyRequest").orderByChild('status').equalTo('A').onChildAdded.listen((event) {
+      final dynamic key = event.snapshot.key;
+      if (key != null && !keyList.contains(key)) {
+        keyList.add(key.toString());
+        setState(() {});
+      }
+    });
+    reference.child("MoneyRequest").orderByChild('status').equalTo('A').onChildRemoved.listen((event) {
+      final dynamic key = event.snapshot.key;
+      if (key != null && keyList.contains(key)) {
+        keyList.remove(key);
+        setState(() {});
+      }
+    });
+  }
+
   Widget getWidget(int init, double width, double height) {
     if (init == 1) {
 
@@ -308,17 +328,42 @@ class _main_manager_screenState extends State<main_manager_screen> {
                               title: Container(
                                   alignment: Alignment.centerLeft,
                                   child : Padding(
-                                    padding: EdgeInsets.only(top: 15,bottom: 15),
-                                    child: Text(
-                                      'Quản lý khách hàng',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: 'muli',
-                                        fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
+                                      padding: EdgeInsets.only(top: 15,bottom: 15),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Quản lý k.hàng  ',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily: 'muli',
+                                              fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+
+                                          Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius: BorderRadius.circular(100),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                keyList.length.toString(),
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontFamily: 'muli',
+                                                  fontSize: 13,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                   )
                               ),
                               children: [

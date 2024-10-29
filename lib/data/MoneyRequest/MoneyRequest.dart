@@ -6,10 +6,11 @@ class MoneyRequest {
   Account owner;
   double money;
   Time createTime;
+  String walletAdd;
   String status; //A: chưa xử lý, B: đã duyệt, C: đã từ chối
   int type; //1: nạp, 2: rút
 
-  MoneyRequest({required this.id, required this.owner, required this.status, required this.createTime, required this.money, required this.type});
+  MoneyRequest({required this.id, required this.owner, required this.status, required this.createTime, required this.money, required this.type, required this.walletAdd});
 
   Map<dynamic, dynamic> toJson() => {
     'id': id,
@@ -18,6 +19,7 @@ class MoneyRequest {
     'owner': owner.toJson(),
     'createTime': createTime.toJson(),
     'type': type,
+    'walletAdd': walletAdd,
   };
 
   factory MoneyRequest.fromJson(Map<dynamic, dynamic> json) {
@@ -28,6 +30,7 @@ class MoneyRequest {
       createTime: Time.fromJson(json['createTime']),
       money: double.parse(json['money'].toString()),
       type: int.parse(json['type'].toString()),
+      walletAdd: json['walletAdd'].toString(),
     );
   }
 }

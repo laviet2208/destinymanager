@@ -17,7 +17,7 @@ class item_money_request extends StatefulWidget {
 }
 
 class _item_money_requestState extends State<item_money_request> {
-  MoneyRequest moneyRequest = MoneyRequest(id: '', owner: Account(id: '', username: '', password: '', address: '', createTime: getCurrentTime(), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: [], referralCode: ''), status: '', createTime: getCurrentTime(), money: 0, type: 0);
+  MoneyRequest moneyRequest = MoneyRequest(id: '', owner: Account(id: '', username: '', password: '', address: '', createTime: getCurrentTime(), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: [], referralCode: ''), status: '', createTime: getCurrentTime(), money: 0, type: 0, walletAdd: '');
   String status = '';
   Color statusColor = Colors.white;
 

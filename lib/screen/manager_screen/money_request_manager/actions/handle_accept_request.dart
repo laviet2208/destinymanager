@@ -15,6 +15,7 @@ class handle_accept_request extends StatefulWidget {
 }
 
 class _handle_accept_requestState extends State<handle_accept_request> {
+  bool loading = false;
   static Future<Account> getAccountData(String id) async {
     Account account = Account(id: '', username: '', password: '', address: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), money: 0, firstName: '', lastName: '', phoneNum: '', lockstatus: 0, voucherList: [], referralCode: '',);
     final reference = FirebaseDatabase.instance.ref();
@@ -52,9 +53,12 @@ class _handle_accept_requestState extends State<handle_accept_request> {
           },
         ),
         TextButton(
-          child: Text('Đồng ý', style: TextStyle(color: Colors.blue,),),
+          child: !loading ? Text('Đồng ý', style: TextStyle(color: Colors.blue,),) : CircularProgressIndicator(color: Colors.blueAccent,),
           onPressed: () async {
-            Account acc = await getAccountData(widget.moneyRequest.owner.id);
+            setState(() {
+              loading = true;
+            });
+            // Account acc = await getAccountData(widget.moneyRequest.owner.id);
             if (widget.moneyRequest.type == 1) {
               TransactionHis transaction = TransactionHis(id: '', content: '', money: 0, owner: '', type: 1);
               String id = (DateTime.now().hour >= 10 ? DateTime.now().hour.toString() : '0' + DateTime.now().hour.toString()) + (DateTime.now().minute >= 10 ? DateTime.now().minute.toString() : '0' + DateTime.now().minute.toString()) + (DateTime.now().second >= 10 ? DateTime.now().second.toString() : '0' + DateTime.now().second.toString()) + (DateTime.now().day >= 10 ? DateTime.now().day.toString() : '0' + DateTime.now().day.toString()) + (DateTime.now().month >= 10 ? DateTime.now().month.toString() : '0' + DateTime.now().month.toString()) + (DateTime.now().year >= 10 ? DateTime.now().year.toString() : '0' + DateTime.now().year.toString());
@@ -62,14 +66,14 @@ class _handle_accept_requestState extends State<handle_accept_request> {
               transaction.money = widget.moneyRequest.money;
               transaction.content = 'Handle request ' + widget.moneyRequest.id;
               transaction.owner = widget.moneyRequest.owner.id;
-              acc.money = acc.money + widget.moneyRequest.money;
-              await update_money(acc.money);
+              widget.moneyRequest.owner.money = widget.moneyRequest.owner.money + widget.moneyRequest.money;
+              await update_money(widget.moneyRequest.owner.money);
               await update_trans(transaction);
               await update_request();
               toastMessage('Xử lý thành công');
               Navigator.of(context).pop();
             } else {
-              if (acc.money < widget.moneyRequest.money) {
+              if (widget.moneyRequest.owner.money < widget.moneyRequest.money) {
                 toastMessage('Tài khoản khách không còn đủ tiền');
               } else {
                 TransactionHis transaction = TransactionHis(id: '', content: '', money: 0, owner: '', type: 0);
@@ -78,14 +82,18 @@ class _handle_accept_requestState extends State<handle_accept_request> {
                 transaction.money = widget.moneyRequest.money;
                 transaction.content = 'Handle request ' + widget.moneyRequest.id;
                 transaction.owner = widget.moneyRequest.owner.id;
-                acc.money = acc.money - widget.moneyRequest.money;
-                await update_money(acc.money);
+                widget.moneyRequest.owner.money = widget.moneyRequest.owner.money - widget.moneyRequest.money;
+                await update_money(widget.moneyRequest.owner.money);
                 await update_trans(transaction);
                 await update_request();
                 toastMessage('Xử lý thành công');
                 Navigator.of(context).pop();
               }
             }
+            setState(() {
+              loading = false;
+            });
+
           },
         ),
       ],
