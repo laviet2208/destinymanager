@@ -4,6 +4,7 @@ import 'package:destinymanager/data/product/Dimension.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../../data/product/Product.dart';
 import '../../../../../../general_ingredient/textfield_type_1.dart';
@@ -49,6 +50,24 @@ class _update_dimensionState extends State<update_dimension> {
     }
   }
 
+  Future<String> uploadBase64Image({required String base64Data, String bucket = 'destinyusa', String folder = '',}) async {
+    final bytes = base64Decode(base64Data);
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.png';
+    final path = folder.isNotEmpty ? '$folder/$fileName' : fileName;
+    print('đây là path: ' + path);
+    try {
+      // uploadBinary trả về path lưu lên bucket dưới dạng String
+      final String storedPath = await Supabase.instance.client.storage.from(bucket).uploadBinary(path, bytes);
+      print('đây là storedpath: ' + storedPath);
+      // getPublicUrl giờ cũng trả về String rồi, không có .data
+      final String publicUrl = Supabase.instance.client.storage.from(bucket).getPublicUrl(path);
+
+      return publicUrl;
+    } catch (e) {
+      throw Exception('Upload thất bại: $e');
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,7 +76,7 @@ class _update_dimensionState extends State<update_dimension> {
     costController.text = widget.product.dimensionList[widget.index].cost.toString();
     costSaleController.text = widget.product.dimensionList[widget.index].costBfSale.toString();
     inventoryController.text = widget.product.dimensionList[widget.index].inventory.toStringAsFixed(0);
-    imageMain =  Uint8List.fromList(base64Decode(widget.product.dimensionList[widget.index].image));
+    // imageMain =  Uint8List.fromList(base64Decode(widget.product.dimensionList[widget.index].image));
   }
 
   @override
@@ -125,9 +144,11 @@ class _update_dimensionState extends State<update_dimension> {
                   child: Container(
                     margin: EdgeInsets.all(5),
                     child: Center(
-                      child: imageMain == null ? Icon(
-                        Icons.photo_camera_outlined,
-                        color: Colors.black,
+                      child: imageMain == null ? Image.network(
+                        widget.product.dimensionList[widget.index].image,
+                        fit: BoxFit.fill,
+                        height: 100,
+                        width: 100,
                       ) : Image.memory(
                         imageMain!,
                         fit: BoxFit.fill,
@@ -158,17 +179,21 @@ class _update_dimensionState extends State<update_dimension> {
       actions: <Widget>[
         TextButton(
           onPressed: () async {
-            if (areValuesValid() && nameController.text.isNotEmpty && imageMain != null) {
+            if (areValuesValid() && nameController.text.isNotEmpty) {
               setState(() {
                 loading = true;
               });
               widget.product.dimensionList[widget.index].name = nameController.text.toString();
               widget.product.dimensionList[widget.index].cost = double.parse(costController.text.toString());
               widget.product.dimensionList[widget.index].costBfSale = double.parse(costSaleController.text.toString());
-              widget.product.dimensionList[widget.index].image = base64Encode(imageMain!);
+              if (imageMain != null) {
+                widget.product.dimensionList[widget.index].image = base64Encode(imageMain!);
+                String uploadURL = await uploadBase64Image(base64Data: widget.product.dimensionList[widget.index].image, folder: 'productImage/' + widget.product.id);
+                widget.product.dimensionList[widget.index].image = uploadURL;
+              }
               widget.product.dimensionList[widget.index].inventory = int.parse(inventoryController.text.toString());
-              toastMessage('Sửa thành công');
               await product_manager_controller.change_productDimension(widget.product);
+              toastMessage('Sửa thành công');
               setState(() {
                 loading = false;
               });

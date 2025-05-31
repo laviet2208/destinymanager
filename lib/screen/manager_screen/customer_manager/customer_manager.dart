@@ -1,3 +1,5 @@
+import 'package:destinymanager/data/chatData/messenger.dart';
+import 'package:destinymanager/screen/manager_screen/customer_manager/ingredient/chat_manager/chat_room/ingredient/Item_messenger.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../general_ingredient/heading_title.dart';
@@ -105,7 +107,7 @@ class _customer_managerState extends State<customer_manager> {
                 itemCount: keyList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return item_customer(id: keyList.reversed.toList()[index], index: index);
+                  return item_customer(id: keyList.reversed.toList()[index], index: index, list: keyList,);
                 },
               ),
             ),

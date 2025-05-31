@@ -121,7 +121,7 @@ class _item_product_flashsaleState extends State<item_product_flashsale> {
                   border: Border.all(width: 0.5,),
                 ),
                 alignment: Alignment.center,
-                child: Image.memory(Uint8List.fromList(base64Decode(product.imageList[0]))),
+                child: Image.network(product.imageList[0]),
               ),
             ),
           ),

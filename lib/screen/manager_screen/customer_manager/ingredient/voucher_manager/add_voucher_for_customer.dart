@@ -26,13 +26,15 @@ class _add_voucher_for_customerState extends State<add_voucher_for_customer> {
   final toidatiencontrol = TextEditingController();
 
   List<String> TypeList = ['Giảm theo phần trăm', 'Giảm theo tiền cứng',];
+  List<String> NameList = ['Sale', 'Event Voucher',];
   String chosenType = '';
+  String chosenName = '';
 
   bool loading = false;
   Voucher voucher = Voucher(id: '', Money: 0, mincost: 0, startTime: getCurrentTime(), endTime: getCurrentTime(), useCount: 0, maxCount: 0, eventName: '', perCustom: 1, CustomList: [], maxSale: 0, type: 0,);
 
   //Sự kiện chọn loại voucher
-  int typeIndex = 0;
+  int typeIndex = 1;
   void dropdownCallback(String? selectedValue) {
     if (selectedValue is String) {
       chosenType = selectedValue;
@@ -41,6 +43,15 @@ class _add_voucher_for_customerState extends State<add_voucher_for_customer> {
       } else {
         typeIndex = 1;
       }
+    }
+    setState(() {
+
+    });
+  }
+
+  void dropdownNameCallback(String? selectedValue) {
+    if (selectedValue is String) {
+      chosenName = selectedValue;
     }
     setState(() {
 
@@ -115,7 +126,11 @@ class _add_voucher_for_customerState extends State<add_voucher_for_customer> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    chosenType = TypeList.first;
+    chosenType = TypeList[1];
+    chosenName = NameList[0];
+    toidacontrol.text = "1";
+    moikhachcontrol.text = "1";
+    toithieugiamcontrol.text = "500";
   }
 
   @override
@@ -154,51 +169,66 @@ class _add_voucher_for_customerState extends State<add_voucher_for_customer> {
               height: 10,
             ),
 
-            Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: Container(
-                  height: 50,
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.black,
-                      )
-                  ),
+            // Padding(
+            //     padding: EdgeInsets.only(left: 10, right: 10),
+            //     child: Container(
+            //       height: 50,
+            //       alignment: Alignment.centerLeft,
+            //       decoration: BoxDecoration(
+            //           color: Colors.white,
+            //           borderRadius: BorderRadius.circular(0),
+            //           boxShadow: [
+            //             BoxShadow(
+            //               color: Colors.grey.withOpacity(0.3),
+            //               spreadRadius: 5,
+            //               blurRadius: 7,
+            //               offset: Offset(0, 3),
+            //             ),
+            //           ],
+            //           border: Border.all(
+            //             width: 1,
+            //             color: Colors.black,
+            //           )
+            //       ),
+            //
+            //       child: Padding(
+            //         padding: EdgeInsets.only(left: 10),
+            //         child: Form(
+            //           child: TextFormField(
+            //             controller: tenchuongtrinhcontrol,
+            //             style: TextStyle(
+            //               color: Colors.black,
+            //               fontSize: 16,
+            //               fontFamily: 'muli',
+            //             ),
+            //             decoration: InputDecoration(
+            //               border: InputBorder.none,
+            //               hintText: 'Tên chương trình',
+            //               hintStyle: TextStyle(
+            //                 color: Colors.grey,
+            //                 fontSize: 16,
+            //                 fontFamily: 'muli',
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     )
+            // ),
 
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Form(
-                      child: TextFormField(
-                        controller: tenchuongtrinhcontrol,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'muli',
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Tên chương trình',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontFamily: 'muli',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                )
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: DropdownButton<String>(
+                items: NameList.map((e) => DropdownMenuItem<String>(
+                  value: e,
+                  child: Text(e),
+                )).toList(),
+                onChanged: (value) { dropdownNameCallback(value); },
+                value: chosenName,
+                iconEnabledColor: Colors.black,
+                isExpanded: true,
+                iconDisabledColor: Colors.grey,
+              ),
             ),
 
             Container(
@@ -795,12 +825,12 @@ class _add_voucher_for_customerState extends State<add_voucher_for_customer> {
       actions: <Widget>[
         loading ? CircularProgressIndicator(color: Colors.blueAccent,) : TextButton(
           onPressed: () async {
-            if (tenchuongtrinhcontrol.text.isNotEmpty && macodecontrol.text.isNotEmpty && ngaybatdaucontrol.text.isNotEmpty && ngayketthuccontrol.text.isNotEmpty && sotiengiamcontrol.text.isNotEmpty && toithieugiamcontrol.text.isNotEmpty && toidacontrol.text.isNotEmpty && moikhachcontrol.text.isNotEmpty) {
+            if (chosenName != '' && macodecontrol.text.isNotEmpty && ngaybatdaucontrol.text.isNotEmpty && ngayketthuccontrol.text.isNotEmpty && sotiengiamcontrol.text.isNotEmpty && toithieugiamcontrol.text.isNotEmpty && toidacontrol.text.isNotEmpty && moikhachcontrol.text.isNotEmpty) {
               if (isPositiveDouble(toithieugiamcontrol.text.toString()) && isPositiveDouble(sotiengiamcontrol.text.toString()) && isPositiveInteger(toidacontrol.text.toString())) {
                 setState(() {
                   loading = true;
                 });
-                voucher.eventName = tenchuongtrinhcontrol.text.toString();
+                voucher.eventName = chosenName;
                 voucher.id = macodecontrol.text.toString();
                 voucher.type = typeIndex;
                 voucher.Money = double.parse(sotiengiamcontrol.text.toString());

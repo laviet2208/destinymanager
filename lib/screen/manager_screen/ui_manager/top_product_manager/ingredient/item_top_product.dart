@@ -125,7 +125,7 @@ class _item_top_productState extends State<item_top_product> {
                   border: Border.all(width: 0.5,),
                 ),
                 alignment: Alignment.center,
-                child: Image.memory(Uint8List.fromList(base64Decode(product.imageList[0]))),
+                child: Image.network(product.imageList[0]),
               ),
             ),
           ),

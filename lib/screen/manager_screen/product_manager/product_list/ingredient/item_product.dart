@@ -1,3 +1,4 @@
+import 'package:destinymanager/general_ingredient/utils.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/select_product_type_and_directory/product_type_search.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/dimension_actions/delete_dimension.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/dimension_actions/update_dimension.dart';
@@ -15,7 +16,9 @@ import '../controller.dart';
 class item_product extends StatefulWidget {
   final String id;
   final int index;
-  const item_product({super.key, required this.index, required this.id});
+  final VoidCallback voidCallback;
+  final List<Product> productList;
+  const item_product({super.key, required this.index, required this.id, required this.voidCallback, required this.productList});
 
   @override
   State<item_product> createState() => _item_productState();
@@ -155,7 +158,7 @@ class _item_productState extends State<item_product> {
           ),
 
           Container(
-            width: ((width - 50)/5)*2-1,
+            width: ((width - 50)/5)*2-1-200,
             child: Padding(
               padding: EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 10,),
               child: ListView.builder(
@@ -286,6 +289,22 @@ class _item_productState extends State<item_product> {
                   );
                 },
               ),
+            ),
+          ),
+
+          Container(
+            width: 1,
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 240, 240, 240)
+            ),
+          ),
+
+          Container(
+            width: 199,
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Image.network(product.imageList.first, fit: BoxFit.fitHeight,),
             ),
           ),
 
@@ -458,6 +477,39 @@ class _item_productState extends State<item_product> {
                           product.showStatus = 0;
                           await product_manager_controller.change_productShowStatus(product);
                         }
+                      },
+                    ),
+                  ),
+
+                  Container(height: 8,),
+
+                  Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: GestureDetector(
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.black
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Xóa sản phẩm',
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+                        await databaseRef.child('productList').child(product.id).remove();
+                        toastMessage("xóa thành công");
+                        widget.productList.remove(product);
+                        widget.voidCallback();
                       },
                     ),
                   ),

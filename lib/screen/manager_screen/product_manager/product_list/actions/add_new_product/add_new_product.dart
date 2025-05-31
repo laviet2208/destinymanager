@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:destinymanager/data/product/DataChangeHistory.dart';
+import 'package:destinymanager/screen/main_screen/main_manager_screen.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/add_product_dimension/add_product_dimension.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/add_product_dimension/item_dimension.dart';
 import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/add_product_dimension/product_dimension_select.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +17,7 @@ import '../../../../../../general_ingredient/utils.dart';
 import 'add_product_image/select_product_image.dart';
 import 'select_product_type_and_directory/select_product_directory.dart';
 import 'select_product_type_and_directory/select_product_type.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class add_new_product extends StatefulWidget {
   const add_new_product({super.key,});
@@ -23,6 +28,7 @@ class add_new_product extends StatefulWidget {
 
 class _add_new_productState extends State<add_new_product> {
   bool showStatus = false;
+
   QuillEditorController controller = QuillEditorController();
   final nameController = TextEditingController();
   bool loading = false;
@@ -34,6 +40,24 @@ class _add_new_productState extends State<add_new_product> {
       return true;
     }
     return false;
+  }
+
+  Future<String> uploadBase64Image({required String base64Data, String bucket = 'destinyusa', String folder = '',}) async {
+    final bytes = base64Decode(base64Data);
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.png';
+    final path = folder.isNotEmpty ? '$folder/$fileName' : fileName;
+    print('đây là path: ' + path);
+    try {
+      // uploadBinary trả về path lưu lên bucket dưới dạng String
+      final String storedPath = await Supabase.instance.client.storage.from(bucket).uploadBinary(path, bytes);
+      print('đây là storedpath: ' + storedPath);
+      // getPublicUrl giờ cũng trả về String rồi, không có .data
+      final String publicUrl = Supabase.instance.client.storage.from(bucket).getPublicUrl(path);
+
+      return publicUrl;
+    } catch (e) {
+      throw Exception('Upload thất bại: $e');
+    }
   }
 
   Future<void> push_new_product(Product product) async{
@@ -83,6 +107,7 @@ class _add_new_productState extends State<add_new_product> {
     double height = MediaQuery.of(context).size.height;
     double height1 = MediaQuery.of(context).size.height - 110;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         width: width,
         height: height,
@@ -112,7 +137,7 @@ class _add_new_productState extends State<add_new_product> {
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, 'admin/mainscreen');
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => main_manager_screen()),);
                   },
                 ),
               ),
@@ -125,7 +150,7 @@ class _add_new_productState extends State<add_new_product> {
                     height: 40,
                     alignment: Alignment.centerLeft,
                     child: AutoSizeText(
-                      'Thêm mới sản phẩm',
+                      'Tạo mới sản phẩm',
                       style: TextStyle(
                         fontFamily: 'muli',
                         fontSize: 100,
@@ -136,7 +161,9 @@ class _add_new_productState extends State<add_new_product> {
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, 'admin/mainscreen');
+                    // Navigator.pushNamed(context, 'admin/mainscreen');
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => main_manager_screen()),);
+
                   },
                 ),
               ),
@@ -152,7 +179,7 @@ class _add_new_productState extends State<add_new_product> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white
+                            color: Colors.white
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -171,7 +198,141 @@ class _add_new_productState extends State<add_new_product> {
 
                       Container(height: 10,),
 
-                      product_dimension_select(product: product),
+                      // product_dimension_select(product: product),
+
+                      Container(
+                        width: width/4,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1), // màu của shadow
+                              spreadRadius: 5, // bán kính của shadow
+                              blurRadius: 7, // độ mờ của shadow
+                              offset: Offset(0, 3), // vị trí của shadow
+                            ),
+                          ],
+                          color: Colors.white,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 20,),
+
+                            Padding(
+                                padding: EdgeInsets.only(left: 20, right: 10),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Kích cỡ sản phẩm',
+                                      style: TextStyle(
+                                        fontFamily: 'muli',
+                                        fontSize: 17,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: 5,),
+
+                                    GestureDetector(
+                                      child: Icon(
+                                        Icons.question_mark,
+                                        color: Colors.red,
+                                      ),
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              backgroundColor: Colors.white,
+                                              insetPadding: EdgeInsets.zero,
+                                              contentPadding: EdgeInsets.all(10),
+                                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                                              content: Container(
+                                                width: width/2,
+                                                height: (width/2)/(1258/765),
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: AssetImage('assets/hd/hdsd1.png'),
+                                                    )
+                                                ),
+                                              ),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {Navigator.of(context).pop();},
+                                                  child: Text('Đóng', style: TextStyle(color: Colors.red),),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                )
+                            ),
+
+                            SizedBox(height: 10,),
+
+                            product.dimensionList.isNotEmpty ? Container(
+                              child: ListView.builder(
+                                itemCount: product.dimensionList.length,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(left: 20, right: 10),
+                                    child: item_dimension(dimension: product.dimensionList[index], index: index, deleteEvent: () { product.dimensionList.removeAt(index); setState(() {}); Navigator.of(context).pop(); }, editEvent: () {setState(() {
+
+                                    });  },),
+                                  );
+                                },
+                              ),
+                            ) : Padding(
+                              padding: EdgeInsets.only(left: 20, right: 10),
+                              child: Text(
+                                'Chưa thêm kích cỡ sản phẩm',
+                                style: TextStyle(
+                                  fontFamily: 'muli',
+                                  fontSize: 14,
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 10,),
+
+                            Padding(
+                              padding: EdgeInsets.only(left: 20, right: 20),
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return add_product_dimension(product: product, event: () {setState(() {});  },);
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    'Thêm kích cỡ sản phẩm',
+                                    style: TextStyle(
+                                      fontFamily: 'muli',
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 20,),
+                          ],
+                        ),
+                      ),
 
                       Container(height: 20,),
                     ],
@@ -309,14 +470,22 @@ class _add_new_productState extends State<add_new_product> {
                                   product.description = await controller.getText();
                                   product.name = nameController.text.toString();
                                   product.createTime = getCurrentTime();
-                                  DataChangeHistory changeHis = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 1, productIdChange: product.id);
-                                  await push_history(changeHis);
+                                  //Xử lý upload ảnh lên supabase để lấy url
+                                  for (int i  = 0; i < product.imageList.length; i++) {
+                                    String uploadURL = await uploadBase64Image(base64Data: product.imageList[i], folder: 'productImage/' + product.id);
+                                    product.imageList[i] = uploadURL;
+                                  }
+                                  for (int i  = 0; i < product.dimensionList.length; i++) {
+                                    String uploadURL = await uploadBase64Image(base64Data: product.dimensionList[i].image, folder: 'productImage/' + product.id);
+                                    product.dimensionList[i].image = uploadURL;
+                                  }
+                                  //Xử lý xong
                                   await push_new_product(product);
                                   setState(() {
                                     loading = false;
                                   });
                                   toastMessage('Tạo sản phẩm thành công');
-                                  Navigator.pushNamed(context, 'admin/mainscreen');
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => main_manager_screen()),);
                                 } else {
                                   toastMessage('Vui lòng hoàn thành đầy đủ các thông tin');
                                 }

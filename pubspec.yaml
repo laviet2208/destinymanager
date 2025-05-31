@@ -44,8 +44,13 @@ dependencies:
   flutter_typeahead: ^5.2.0
   flutter_widget_from_html: ^0.15.1
   image_picker_web: ^3.0.0+1
+  image_picker: ^1.1.2
   cloud_firestore: ^5.0.2
   shared_preferences: ^2.3.2
+  supabase_flutter: ^2.9.0
+
+dependency_overrides:
+  file_picker: ^6.0.0
 
 dev_dependencies:
   flutter_test:

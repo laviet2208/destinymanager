@@ -10,7 +10,7 @@ class item_product_search_for_add extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Uint8List image = Uint8List.fromList(base64Decode(product.imageList.first));
+    // Uint8List image = Uint8List.fromList(base64Decode(product.imageList.first));
     return Container(
       height: 80,
       decoration: BoxDecoration(
@@ -23,7 +23,7 @@ class item_product_search_for_add extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: MemoryImage(image),
+                image: NetworkImage(product.imageList.first),
               )
             ),
           ),

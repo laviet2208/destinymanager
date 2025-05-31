@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:destinymanager/screen/manager_screen/product_manager/product_list/actions/add_new_product/add_new_product.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../../data/product/Product.dart';
@@ -17,7 +18,7 @@ class _product_list_mainState extends State<product_list_main> {
   List<Product> productList = [];
   List<Product> chosenList = [];
   List<String> keyList = [];
-  List<String> title = ['Tên sản phẩm', 'Kích cỡ', 'Danh mục và phân loại', 'Thao tác'];
+  List<String> title = ['Tên sản phẩm', 'Kích cỡ và hình ảnh', 'Danh mục và phân loại', 'Thao tác'];
 
   void getData() {
     final reference = FirebaseDatabase.instance.ref();
@@ -112,7 +113,9 @@ class _product_list_mainState extends State<product_list_main> {
                 ),
               ),
               onTap: () {
-                Navigator.pushNamed(context, 'admin/addproduct');
+                // Navigator.pushNamed(context, 'admin/addproduct');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => add_new_product()),);
+
               },
             ),
           ),
@@ -218,7 +221,9 @@ class _product_list_mainState extends State<product_list_main> {
                 itemCount: keyList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return item_product(id: keyList[index], index: index);
+                  return item_product(id: keyList.reversed.toList()[index], index: index, voidCallback: () {setState(() {
+
+                  });  }, productList: productList,);
                 },
               ),
             ),

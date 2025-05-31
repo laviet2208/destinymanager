@@ -32,7 +32,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('productType').set(product.productType);
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -44,7 +44,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('dimensionList').set(product.dimensionList.map((e) => e.toJson()).toList());
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -56,7 +56,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('name').set(product.name);
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -68,7 +68,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('description').set(product.description);
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -80,7 +80,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('productDirectory').set(product.productDirectory);
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -92,7 +92,7 @@ class product_manager_controller {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       DataChangeHistory dataChangeHistory = DataChangeHistory(id: 0, timeHappend: getCurrentTime(), changeType: 2, productIdChange: product.id);
-      await push_history(dataChangeHistory);
+      // await push_history(dataChangeHistory);
       await databaseRef.child('productList').child(product.id).child('showStatus').set(product.showStatus);
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');

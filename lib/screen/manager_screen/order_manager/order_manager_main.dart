@@ -112,7 +112,7 @@ class _order_manager_mainState extends State<order_manager_main> {
                 itemCount: keyList.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  return item_order(id: keyList[index], index: index);
+                  return item_order(id: keyList.reversed.toList()[index], index: index);
                 },
               ),
             ),

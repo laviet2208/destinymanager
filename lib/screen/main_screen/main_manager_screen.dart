@@ -3,6 +3,7 @@ import 'package:destinymanager/screen/manager_screen/ads_manager/ads_manager_mai
 import 'package:destinymanager/screen/manager_screen/customer_manager/customer_manager.dart';
 import 'package:destinymanager/screen/manager_screen/flashsale_manager/product_in_flashsale/product_list_in_flash_sale.dart';
 import 'package:destinymanager/screen/manager_screen/flashsale_manager/voucher_list_manager/voucher_manager_main.dart';
+import 'package:destinymanager/screen/manager_screen/history_transaction_manager/history_transaction_manager.dart';
 import 'package:destinymanager/screen/manager_screen/money_request_manager/money_request_manager.dart';
 import 'package:destinymanager/screen/manager_screen/notice_manager/notice_manager_main.dart';
 import 'package:destinymanager/screen/manager_screen/order_manager/order_manager_main.dart';
@@ -26,6 +27,7 @@ class main_manager_screen extends StatefulWidget {
 
 class _main_manager_screenState extends State<main_manager_screen> {
   List<String> keyList = [];
+  List<String> orderList = [];
   void getRequestData() {
     final reference = FirebaseDatabase.instance.ref();
     reference.child("MoneyRequest").orderByChild('status').equalTo('A').onChildAdded.listen((event) {
@@ -36,6 +38,24 @@ class _main_manager_screenState extends State<main_manager_screen> {
       }
     });
     reference.child("MoneyRequest").orderByChild('status').equalTo('A').onChildRemoved.listen((event) {
+      final dynamic key = event.snapshot.key;
+      if (key != null && orderList.contains(key)) {
+        orderList.remove(key);
+        setState(() {});
+      }
+    });
+  }
+
+  void getOrderData() {
+    final reference = FirebaseDatabase.instance.ref();
+    reference.child("Order").orderByChild('status').equalTo('A').onChildAdded.listen((event) {
+      final dynamic key = event.snapshot.key;
+      if (key != null && !orderList.contains(key)) {
+        orderList.add(key.toString());
+        setState(() {});
+      }
+    });
+    reference.child("Order").orderByChild('status').equalTo('A').onChildRemoved.listen((event) {
       final dynamic key = event.snapshot.key;
       if (key != null && keyList.contains(key)) {
         keyList.remove(key);
@@ -117,12 +137,26 @@ class _main_manager_screenState extends State<main_manager_screen> {
       return top_product_manager();
     }
 
+    if (init == 20) {
+      return history_transaction_manager();
+    }
+
     return Container();
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getRequestData();
+    getOrderData();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+
     return WillPopScope(
       child: Scaffold(
         body: Container(
@@ -286,17 +320,42 @@ class _main_manager_screenState extends State<main_manager_screen> {
                               title: Container(
                                   alignment: Alignment.centerLeft,
                                   child : Padding(
-                                    padding: EdgeInsets.only(top: 15,bottom: 15),
-                                    child: Text(
-                                      'Quản lý đơn hàng',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: 'muli',
-                                        fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
+                                      padding: EdgeInsets.only(top: 15,bottom: 15),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Quản lý đơn  ',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily: 'muli',
+                                              fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+
+                                          Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius: BorderRadius.circular(100),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                orderList.length.toString(),
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontFamily: 'muli',
+                                                  fontSize: 13,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                   )
                               ),
                               children: [
@@ -384,45 +443,12 @@ class _main_manager_screenState extends State<main_manager_screen> {
                                     });
                                   },
                                 ),
-                              ],
-                            ),
 
-                            Container(
-                              height: 1,
-                              decoration: BoxDecoration(
-                                  color: Colors.white
-                              ),
-                            ),
-
-                            ExpansionTile(
-                              leading: Icon(
-                                Icons.discount_outlined,
-                                color: Colors.white,
-                              ),
-                              iconColor: Colors.white,
-                              collapsedIconColor: Colors.white,
-                              title: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child : Padding(
-                                    padding: EdgeInsets.only(top: 15,bottom: 15),
-                                    child: Text(
-                                      'Quản lý Voucher',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: 'muli',
-                                        fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  )
-                              ),
-                              children: [
                                 GestureDetector(
-                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Danh sách mã giảm giá', thisIndex: 12,),
+                                  child: feature_type_1(selectButton: finalData.selectButton, title: 'Lịch sử giao dịch', thisIndex: 20,),
                                   onTap: () {
                                     setState(() {
-                                      finalData.selectButton = 12;
+                                      finalData.selectButton = 20;
                                     });
                                   },
                                 ),
@@ -435,6 +461,48 @@ class _main_manager_screenState extends State<main_manager_screen> {
                                   color: Colors.white
                               ),
                             ),
+
+                            // ExpansionTile(
+                            //   leading: Icon(
+                            //     Icons.discount_outlined,
+                            //     color: Colors.white,
+                            //   ),
+                            //   iconColor: Colors.white,
+                            //   collapsedIconColor: Colors.white,
+                            //   title: Container(
+                            //       alignment: Alignment.centerLeft,
+                            //       child : Padding(
+                            //         padding: EdgeInsets.only(top: 15,bottom: 15),
+                            //         child: Text(
+                            //           'Quản lý Voucher',
+                            //           textAlign: TextAlign.start,
+                            //           style: TextStyle(
+                            //             fontFamily: 'muli',
+                            //             fontSize: 13, // Điều chỉnh kích thước phù hợp với bạn
+                            //             color: Colors.white,
+                            //             fontWeight: FontWeight.normal,
+                            //           ),
+                            //         ),
+                            //       )
+                            //   ),
+                            //   children: [
+                            //     GestureDetector(
+                            //       child: feature_type_1(selectButton: finalData.selectButton, title: 'Danh sách mã giảm giá', thisIndex: 12,),
+                            //       onTap: () {
+                            //         setState(() {
+                            //           finalData.selectButton = 12;
+                            //         });
+                            //       },
+                            //     ),
+                            //   ],
+                            // ),
+                            //
+                            // Container(
+                            //   height: 1,
+                            //   decoration: BoxDecoration(
+                            //       color: Colors.white
+                            //   ),
+                            // ),
 
                             ExpansionTile(
                               leading: Icon(

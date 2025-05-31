@@ -14,8 +14,9 @@ import 'voucher_manager/voucher_manager.dart';
 
 class item_customer extends StatefulWidget {
   final String id;
+  final List<String> list;
   final int index;
-  const item_customer({super.key, required this.id, required this.index});
+  const item_customer({super.key, required this.id, required this.index, required this.list});
 
   @override
   State<item_customer> createState() => _item_customerState();
@@ -38,44 +39,42 @@ class _item_customerState extends State<item_customer> {
     }
   }
 
-  void get_mes() {
-    if (widget.id != '') {
-      final reference = FirebaseDatabase.instance.ref();
-      reference.child("Chatrooms").child(widget.id).child('messengerList').limitToLast(1).onValue.listen((event) {
-        final dynamic data = event.snapshot.value;
-        if (data != null) {
-          for (final result in data) {
-            messenger mes = messenger.fromJson(result);
-            print('Nội dung : ' + mes.content);
-            if (mes.type == 1) {
-              haveMes = true;
-              setState(() {
+  void getMes() {
+    if (widget.id.isEmpty) return;
 
-              });
-            } else {
-              haveMes = false;
-              setState(() {
+    final ref = FirebaseDatabase.instance
+        .ref('Chatrooms/${widget.id}/messengerList')
+        .orderByKey()
+        .limitToLast(1);
 
-              });
-            }
-          }
+    ref.onValue.listen((event) {
+      final children = event.snapshot.children.toList();
 
-        } else {
-          haveMes = false;
-          setState(() {
+      if (children.isEmpty) {
+        setState(() => haveMes = false);
+        return;
+      }
 
-          });
-        }
+      // children.first vì limitToLast(1) chỉ trả về 1 phần tử
+      final lastSnap = children.first;
+      // ép về Map<String, dynamic> cho fromJson xài
+      final json = Map<String, dynamic>.from(lastSnap.value as Map);
+      final mes = messenger.fromJson(json);
+
+      print('Nội dung: ${mes.content}');
+      setState(() {
+        haveMes = mes.type == 1;
       });
-    }
+    });
   }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     get_account();
-    get_mes();
+    getMes();
   }
 
   @override
@@ -350,18 +349,35 @@ class _item_customerState extends State<item_customer> {
                       child: Container(
                         height: 30,
                         decoration: BoxDecoration(
-                          color: haveMes ? Colors.red : Colors.black,
+                          color: Colors.white,
                           border: Border.all(
                               width: 1,
                               color: Colors.black
                           ),
                         ),
                         child: Center(
-                          child: Text(
-                            'Chat với KH',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Chat với KH',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+
+                              SizedBox(width: 10,),
+
+                              Container(
+                                height: 10,
+                                width: 10,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: haveMes ? Colors.red : Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -379,6 +395,70 @@ class _item_customerState extends State<item_customer> {
                                 TextButton(
                                   onPressed: () {Navigator.of(context).pop();},
                                   child: Text('Đóng'),
+                                ),
+
+                                TextButton(
+                                  onPressed: () async {
+                                    final reference = FirebaseDatabase.instance.ref('Chatrooms/${widget.id}');
+                                    await reference.remove();
+                                    toastMessage('Xóa thành công');
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Xóa tin nhắn'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
+                  Container(height: 4,),
+
+                  Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: GestureDetector(
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.red
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Xoá tài khoản',
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Xác Nhận Xóa'),
+                              content: Text('Bạn có chắc chắn muốn xóa không?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Hủy'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Xóa'),
+                                  onPressed: () async {
+                                    DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+                                    await databaseRef.child('Account').child(widget.id).remove();
+                                    widget.list.remove(widget.id);
+                                    Navigator.of(context).pop();
+                                  },
                                 ),
                               ],
                             );
